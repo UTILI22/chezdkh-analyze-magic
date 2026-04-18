@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { ProductGrid } from "@/components/ProductGrid";
+import { TrustBar } from "@/components/TrustBar";
+import { PriceTiers } from "@/components/PriceTiers";
 import { supabase } from "@/integrations/supabase/client";
 
 type Product = {
@@ -9,13 +11,14 @@ type Product = {
   description: string | null;
   price_cents: number;
   image_url: string | null;
+  slug: string | null;
 };
 
 export const Route = createFileRoute("/")({
   loader: async (): Promise<{ products: Product[] }> => {
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url")
+      .select("id, name, description, price_cents, image_url, slug")
       .eq("active", true)
       .order("position", { ascending: true });
     if (error) {
@@ -58,8 +61,10 @@ function Index() {
         </div>
       </section>
 
+      <TrustBar />
+
       {/* Category title under hero */}
-      <section className="border-y border-border bg-cream px-4 py-12 md:py-16">
+      <section className="border-b border-border bg-cream px-4 py-12 md:py-16">
         <div className="mx-auto max-w-5xl text-center">
           <h2 className="font-display text-3xl font-light tracking-[0.15em] text-foreground md:text-4xl">
             {t("category.title")}
@@ -76,6 +81,9 @@ function Index() {
           <ProductGrid products={products} />
         </div>
       </section>
+
+      {/* Offer */}
+      <PriceTiers />
     </div>
   );
 }
