@@ -129,8 +129,8 @@ function ProductPage() {
               <div className="mt-3 flex items-center gap-2 text-sm">
                 {product.active ? (
                   <>
-                    <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="text-emerald-700">En stock</span>
+                    <span className="flex h-2 w-2 rounded-full bg-accent" />
+                    <span className="text-accent">En stock</span>
                   </>
                 ) : (
                   <>
@@ -167,7 +167,7 @@ function ProductPage() {
                   <span className="text-[11px] text-muted-foreground">Guide ci-dessous</span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(product.sizes ?? ["S", "M", "L", "XL", "XXL"]).map((s) => (
+                  {(product.sizes ?? ["S", "M", "L", "XL", "XXL"]).map((s: string) => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
