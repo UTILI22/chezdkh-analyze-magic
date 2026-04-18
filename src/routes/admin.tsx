@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import * as React from "react";
 import { LogOut, Package, ShoppingBag } from "lucide-react";
@@ -10,6 +10,8 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLoginRoute = location.pathname.startsWith("/admin/login");
   const [checking, setChecking] = React.useState(true);
   const [authed, setAuthed] = React.useState(false);
 
