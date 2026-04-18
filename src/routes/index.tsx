@@ -36,7 +36,7 @@ function Index() {
 
   return (
     <div>
-      {/* Hero with central image */}
+      {/* Hero (texte uniquement, image retirée) */}
       <section className="bg-background px-4 py-10 md:py-16">
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-accent">
@@ -49,9 +49,6 @@ function Index() {
             {t("hero.subtitle")}
           </p>
 
-          {/* Central image placeholder (black square) */}
-          <div className="mx-auto mt-10 aspect-[4/5] w-full max-w-2xl overflow-hidden rounded-sm bg-foreground md:aspect-[16/9]" />
-
           <Link
             to="/burkinis"
             className="mt-8 inline-flex items-center justify-center rounded-md border border-foreground bg-foreground px-8 py-3 text-xs font-medium uppercase tracking-[0.2em] text-background transition-all hover:bg-transparent hover:text-foreground"
@@ -60,6 +57,9 @@ function Index() {
           </Link>
         </div>
       </section>
+
+      {/* Offre exclusive — remontée juste sous le hero */}
+      <PriceTiers />
 
       <TrustBar />
 
