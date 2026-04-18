@@ -34,15 +34,15 @@ function OrdersList() {
       });
   }, []);
 
-  const statusBadge = (s: string) => {
-    const map: Record<string, string> = {
-      pending: "bg-yellow-100 text-yellow-800",
-      confirmed: "bg-blue-100 text-blue-800",
-      shipped: "bg-purple-100 text-purple-800",
-      delivered: "bg-green-100 text-green-800",
-      cancelled: "bg-red-100 text-red-800",
+  const statusInfo = (s: string): { label: string; cls: string } => {
+    const map: Record<string, { label: string; cls: string }> = {
+      pending: { label: "⏳ En attente", cls: "bg-yellow-100 text-yellow-900" },
+      confirmed: { label: "✅ Validée", cls: "bg-blue-100 text-blue-900" },
+      shipped: { label: "📦 Expédiée", cls: "bg-purple-100 text-purple-900" },
+      delivered: { label: "🎉 Livrée", cls: "bg-green-100 text-green-900" },
+      cancelled: { label: "✖️ Annulée", cls: "bg-red-100 text-red-900" },
     };
-    return map[s] ?? "bg-muted text-muted-foreground";
+    return map[s] ?? { label: s, cls: "bg-muted text-muted-foreground" };
   };
 
   if (loading) return <p className="text-sm text-muted-foreground">Chargement...</p>;
@@ -80,9 +80,14 @@ function OrdersList() {
                   </td>
                   <td className="p-3 text-right font-medium">{formatPrice(o.total_cents)}</td>
                   <td className="p-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${statusBadge(o.status)}`}>
-                      {o.status}
-                    </span>
+                    {(() => {
+                      const info = statusInfo(o.status);
+                      return (
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${info.cls}`}>
+                          {info.label}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="p-3 text-xs text-muted-foreground">
                     {new Date(o.created_at).toLocaleDateString("fr-BE", {
