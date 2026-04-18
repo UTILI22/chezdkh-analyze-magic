@@ -6,6 +6,7 @@ export type CartItem = {
   priceCents: number;
   imageUrl?: string | null;
   quantity: number;
+  size?: string | null;
 };
 
 type CartCtx = {
@@ -17,12 +18,30 @@ type CartCtx = {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, qty: number) => void;
   clearCart: () => void;
+  /** Total brut (somme des prix unitaires × quantité) — sert au comparatif */
+  rawSubtotalCents: number;
+  /** Sous-total après application du tarif dégressif burkinis */
   subtotalCents: number;
+  /** Économie réalisée grâce au dégressif */
+  discountCents: number;
   itemCount: number;
 };
 
 const Ctx = React.createContext<CartCtx | null>(null);
-const STORAGE_KEY = "qos.cart";
+const STORAGE_KEY = "qos.cart.v2";
+
+/**
+ * Tarif dégressif burkinis (tous modèles confondus) :
+ *  1 = 40€, 2 = 70€, 3 = 100€, puis +30€/unité au-delà.
+ *  Le sous-total écrase la somme brute (ex: 2× Noir + 1× Gris = 100€).
+ */
+export function computeBurkiniTotal(qty: number): number {
+  if (qty <= 0) return 0;
+  if (qty === 1) return 4000;
+  if (qty === 2) return 7000;
+  // 3 = 10000, ensuite +3000 par unité supplémentaire
+  return 10000 + (qty - 3) * 3000;
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = React.useState<CartItem[]>([]);
@@ -45,10 +64,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem: CartCtx["addItem"] = (item, qty = 1) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      // Ligne unique = même produit + même taille
+      const existing = prev.find((i) => i.id === item.id && (i.size ?? null) === (item.size ?? null));
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + qty } : i,
+          i === existing ? { ...i, quantity: i.quantity + qty } : i,
         );
       }
       return [...prev, { ...item, quantity: qty }];
@@ -63,8 +83,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
   const clearCart = () => setItems([]);
 
-  const subtotalCents = items.reduce((s, i) => s + i.priceCents * i.quantity, 0);
+  const rawSubtotalCents = items.reduce((s, i) => s + i.priceCents * i.quantity, 0);
   const itemCount = items.reduce((s, i) => s + i.quantity, 0);
+  const subtotalCents = computeBurkiniTotal(itemCount);
+  const discountCents = Math.max(0, rawSubtotalCents - subtotalCents);
 
   return (
     <Ctx.Provider
@@ -77,7 +99,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        rawSubtotalCents,
         subtotalCents,
+        discountCents,
         itemCount,
       }}
     >

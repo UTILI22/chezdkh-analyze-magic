@@ -15,6 +15,8 @@ import { Route as BurkinisRouteImport } from './routes/burkinis'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ThankYouOrderNumberRouteImport } from './routes/thank-you.$orderNumber'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
@@ -49,6 +51,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ThankYouOrderNumberRoute = ThankYouOrderNumberRouteImport.update({
+  id: '/thank-you/$orderNumber',
+  path: '/thank-you/$orderNumber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -73,6 +85,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
@@ -83,6 +97,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
   '/admin': typeof AdminIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
@@ -95,6 +111,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
@@ -108,6 +126,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/admin/login'
     | '/admin/products'
+    | '/product/$slug'
+    | '/thank-you/$orderNumber'
     | '/admin/'
     | '/admin/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
@@ -118,6 +138,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/admin/login'
     | '/admin/products'
+    | '/product/$slug'
+    | '/thank-you/$orderNumber'
     | '/admin'
     | '/admin/orders/$orderId'
   id:
@@ -129,6 +151,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/admin/login'
     | '/admin/products'
+    | '/product/$slug'
+    | '/thank-you/$orderNumber'
     | '/admin/'
     | '/admin/orders/$orderId'
   fileRoutesById: FileRoutesById
@@ -139,6 +163,8 @@ export interface RootRouteChildren {
   BurkinisRoute: typeof BurkinisRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  ProductSlugRoute: typeof ProductSlugRoute
+  ThankYouOrderNumberRoute: typeof ThankYouOrderNumberRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -184,6 +210,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/thank-you/$orderNumber': {
+      id: '/thank-you/$orderNumber'
+      path: '/thank-you/$orderNumber'
+      fullPath: '/thank-you/$orderNumber'
+      preLoaderRoute: typeof ThankYouOrderNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/products': {
       id: '/admin/products'
@@ -231,7 +271,18 @@ const rootRouteChildren: RootRouteChildren = {
   BurkinisRoute: BurkinisRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  ProductSlugRoute: ProductSlugRoute,
+  ThankYouOrderNumberRoute: ThankYouOrderNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
-import { BRAND } from "@/lib/config";
+import { BRAND, SOCIALS } from "@/lib/config";
+import { SocialRow } from "@/components/SocialIcons";
 
 export function Footer() {
   const { t } = useI18n();
@@ -11,6 +12,9 @@ export function Footer() {
           <div>
             <h3 className="font-display text-2xl tracking-wider">{BRAND.name}</h3>
             <p className="mt-2 text-sm text-background/70">{BRAND.tagline}</p>
+            <div className="mt-4">
+              <SocialRow className="text-background" iconClassName="h-4 w-4" />
+            </div>
           </div>
           <div>
             <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
@@ -27,7 +31,19 @@ export function Footer() {
               {t("nav.contact")}
             </h4>
             <p className="text-sm text-background/70">Bruxelles, Belgique</p>
-            <p className="mt-1 text-sm text-background/70">contact@qalbofsilk.com</p>
+            <p className="mt-1 text-sm text-background/70">
+              <a href={`mailto:${SOCIALS.email}`} className="hover:text-accent">{SOCIALS.email}</a>
+            </p>
+            <p className="mt-1 text-sm text-background/70">
+              <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" className="hover:text-accent">
+                Instagram {SOCIALS.instagramHandle}
+              </a>
+            </p>
+            <p className="mt-1 text-sm text-background/70">
+              <a href={SOCIALS.snapchat} target="_blank" rel="noreferrer" className="hover:text-accent">
+                Snapchat {SOCIALS.snapchatHandle}
+              </a>
+            </p>
           </div>
         </div>
         <div className="mt-10 border-t border-background/10 pt-6 text-center text-xs text-background/50">

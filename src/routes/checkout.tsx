@@ -13,21 +13,9 @@ export const Route = createFileRoute("/checkout")({
 });
 
 const COUNTRIES = [
-  "Belgique",
-  "France",
-  "Pays-Bas",
-  "Luxembourg",
-  "Allemagne",
-  "Suisse",
-  "Royaume-Uni",
-  "Espagne",
-  "Italie",
-  "Canada",
-  "États-Unis",
-  "Maroc",
-  "Algérie",
-  "Tunisie",
-  "Autre",
+  "Belgique", "France", "Pays-Bas", "Luxembourg", "Allemagne", "Suisse",
+  "Royaume-Uni", "Espagne", "Italie", "Canada", "États-Unis",
+  "Maroc", "Algérie", "Tunisie", "Autre",
 ];
 
 const schema = z.object({
@@ -45,28 +33,20 @@ const schema = z.object({
 
 function CheckoutPage() {
   const { t } = useI18n();
-  const { items, subtotalCents, clearCart } = useCart();
+  const { items, subtotalCents, rawSubtotalCents, discountCents, clearCart } = useCart();
   const navigate = useNavigate();
 
   const [form, setForm] = React.useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    country: "Belgique",
-    city: "",
-    postal: "",
-    address: "",
-    notes: "",
-    pickup: false,
+    firstName: "", lastName: "", email: "", phone: "",
+    country: "Belgique", city: "", postal: "", address: "",
+    notes: "", pickup: false,
   });
   const [submitting, setSubmitting] = React.useState(false);
 
   const isBelgium = form.country === FREE_SHIPPING_COUNTRY;
-  const shipping = form.pickup && isBelgium ? 0 : isBelgium ? 0 : SHIPPING_CENTS;
+  const shipping = isBelgium ? 0 : SHIPPING_CENTS;
   const total = subtotalCents + shipping;
 
-  // Reset pickup if country changes away from Belgium
   React.useEffect(() => {
     if (!isBelgium && form.pickup) setForm((f) => ({ ...f, pickup: false }));
   }, [isBelgium, form.pickup]);
@@ -112,20 +92,26 @@ function CheckoutPage() {
         .select("id, order_number")
         .single();
 
-      if (orderErr || !order) throw orderErr ?? new Error("Order failed");
+      if (orderErr || !order) {
+        console.error("Order insert error:", orderErr);
+        throw orderErr ?? new Error("Order failed");
+      }
 
       const itemsPayload = items.map((it) => ({
         order_id: order.id,
-        product_id: it.id,
-        product_name: it.name,
+        product_id: it.id.includes("__") ? it.id.split("__")[0] : it.id,
+        product_name: it.size ? `${it.name} (${it.size})` : it.name,
         unit_price_cents: it.priceCents,
         quantity: it.quantity,
       }));
 
       const { error: itemsErr } = await supabase.from("order_items").insert(itemsPayload);
-      if (itemsErr) throw itemsErr;
+      if (itemsErr) {
+        console.error("Items insert error:", itemsErr);
+        throw itemsErr;
+      }
 
-      // Build WhatsApp message
+      // WhatsApp recap (s'ouvre dans un nouvel onglet — l'utilisateur ou le commerçant peut envoyer)
       const lines = [
         `🛍️ *Nouvelle commande ${BRAND.name}*`,
         `N° ${order.order_number}`,
@@ -140,7 +126,7 @@ function CheckoutPage() {
         data.pickup ? `*Mode:* Remise en main propre Bruxelles` : `*Mode:* Expédition`,
         ``,
         `*Produits:*`,
-        ...items.map((i) => `- ${i.name} x${i.quantity} (${formatPrice(i.priceCents * i.quantity)})`),
+        ...items.map((i) => `- ${i.name}${i.size ? ` (${i.size})` : ""} x${i.quantity}`),
         ``,
         `Sous-total: ${formatPrice(subtotalCents)}`,
         `Livraison: ${formatPrice(shipping)}`,
@@ -150,14 +136,21 @@ function CheckoutPage() {
 
       const waUrl = whatsappLink(lines.join("\n"));
 
+      // Sauvegarde l'URL WhatsApp pour la page de remerciement (au cas où le pop-up est bloqué)
+      try { sessionStorage.setItem("qos.lastWa", waUrl); } catch { /* ignore */ }
+      // Tente d'ouvrir WhatsApp automatiquement
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+
       clearCart();
       toast.success(t("checkout.success"));
-      // Open WhatsApp pre-filled
-      window.open(waUrl, "_blank");
-      navigate({ to: "/" });
-    } catch (err) {
+      navigate({
+        to: "/thank-you/$orderNumber",
+        params: { orderNumber: order.order_number },
+      });
+    } catch (err: unknown) {
       console.error(err);
-      toast.error("Erreur lors de la commande. Vérifiez vos informations.");
+      const msg = err instanceof Error ? err.message : "Erreur lors de la commande.";
+      toast.error(msg.includes("row-level") ? "Erreur de connexion. Réessayez dans un instant." : msg);
     } finally {
       setSubmitting(false);
     }
@@ -174,80 +167,37 @@ function CheckoutPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                {t("checkout.firstName")}
-              </label>
-              <input
-                required
-                className={inputCls}
-                value={form.firstName}
-                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-              />
+              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.firstName")}</label>
+              <input required className={inputCls} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                {t("checkout.lastName")}
-              </label>
-              <input
-                required
-                className={inputCls}
-                value={form.lastName}
-                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-              />
+              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.lastName")}</label>
+              <input required className={inputCls} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                {t("checkout.email")}
-              </label>
-              <input
-                required
-                type="email"
-                className={inputCls}
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
+              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.email")}</label>
+              <input required type="email" className={inputCls} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                {t("checkout.phone")}
-              </label>
-              <input
-                required
-                className={inputCls}
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
+              <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.phone")}</label>
+              <input required className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-              {t("checkout.country")}
-            </label>
-            <select
-              className={inputCls}
-              value={form.country}
-              onChange={(e) => setForm({ ...form, country: e.target.value })}
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.country")}</label>
+            <select className={inputCls} value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })}>
+              {COUNTRIES.map((c) => (<option key={c} value={c}>{c}</option>))}
             </select>
           </div>
 
-          {/* Pickup option only for Belgium */}
           {isBelgium && (
             <div className="rounded-md border-2 border-accent/40 bg-accent/5 p-4">
               <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.pickup}
-                  onChange={(e) => setForm({ ...form, pickup: e.target.checked })}
-                  className="mt-1 h-4 w-4 accent-accent"
-                />
+                <input type="checkbox" checked={form.pickup} onChange={(e) => setForm({ ...form, pickup: e.target.checked })} className="mt-1 h-4 w-4 accent-accent" />
                 <div>
                   <p className="text-sm font-semibold text-foreground">{t("checkout.pickup")}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">{t("checkout.pickupHint")}</p>
@@ -260,52 +210,24 @@ function CheckoutPage() {
             <>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                    {t("checkout.city")}
-                  </label>
-                  <input
-                    required={!form.pickup}
-                    className={inputCls}
-                    value={form.city}
-                    onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  />
+                  <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.city")}</label>
+                  <input required={!form.pickup} className={inputCls} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                    {t("checkout.postal")}
-                  </label>
-                  <input
-                    required={!form.pickup}
-                    className={inputCls}
-                    value={form.postal}
-                    onChange={(e) => setForm({ ...form, postal: e.target.value })}
-                  />
+                  <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.postal")}</label>
+                  <input required={!form.pickup} className={inputCls} value={form.postal} onChange={(e) => setForm({ ...form, postal: e.target.value })} />
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-                  {t("checkout.address")}
-                </label>
-                <input
-                  required={!form.pickup}
-                  className={inputCls}
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                />
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.address")}</label>
+                <input required={!form.pickup} className={inputCls} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
               </div>
             </>
           )}
 
           <div>
-            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
-              {t("checkout.notes")}
-            </label>
-            <textarea
-              rows={3}
-              className={inputCls}
-              value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            />
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.notes")}</label>
+            <textarea rows={3} className={inputCls} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
           </div>
 
           <button
@@ -317,23 +239,33 @@ function CheckoutPage() {
           </button>
         </form>
 
-        {/* Summary */}
         <aside className="h-fit rounded-md border border-border bg-card p-6 lg:sticky lg:top-28">
           <h2 className="mb-4 font-display text-xl">Récapitulatif</h2>
           <ul className="space-y-3">
             {items.map((it) => (
-              <li key={it.id} className="flex justify-between gap-3 text-sm">
+              <li key={it.id + (it.size ?? "")} className="flex justify-between gap-3 text-sm">
                 <span className="flex-1">
-                  {it.name} <span className="text-muted-foreground">×{it.quantity}</span>
+                  {it.name}{it.size ? ` (${it.size})` : ""} <span className="text-muted-foreground">×{it.quantity}</span>
                 </span>
-                <span>{formatPrice(it.priceCents * it.quantity)}</span>
+                <span className="text-muted-foreground">{formatPrice(it.priceCents * it.quantity)}</span>
               </li>
             ))}
           </ul>
           <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
+            {discountCents > 0 && (
+              <div className="flex justify-between text-accent">
+                <span>Réduction pack</span>
+                <span>− {formatPrice(discountCents)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t("cart.subtotal")}</span>
-              <span>{formatPrice(subtotalCents)}</span>
+              <span>
+                {discountCents > 0 && (
+                  <span className="mr-2 text-xs text-muted-foreground line-through">{formatPrice(rawSubtotalCents)}</span>
+                )}
+                {formatPrice(subtotalCents)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t("cart.shipping")}</span>
