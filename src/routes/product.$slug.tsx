@@ -19,11 +19,13 @@ type Product = {
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }): Promise<{ product: Product }> => {
-    const { data, error } = await supabase
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
+    const query = supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url, slug, sizes, active")
-      .or(`slug.eq.${params.slug},id.eq.${params.slug}`)
-      .maybeSingle();
+      .select("id, name, description, price_cents, image_url, slug, sizes, active");
+    const { data, error } = isUuid
+      ? await query.eq("id", params.slug).maybeSingle()
+      : await query.eq("slug", params.slug).maybeSingle();
     if (error || !data) throw notFound();
     return { product: data as Product };
   },
