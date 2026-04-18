@@ -132,6 +132,8 @@ export type Database = {
           name: string
           position: number
           price_cents: number
+          sizes: string[]
+          slug: string | null
           updated_at: string
         }
         Insert: {
@@ -143,6 +145,8 @@ export type Database = {
           name: string
           position?: number
           price_cents?: number
+          sizes?: string[]
+          slug?: string | null
           updated_at?: string
         }
         Update: {
@@ -154,6 +158,8 @@ export type Database = {
           name?: string
           position?: number
           price_cents?: number
+          sizes?: string[]
+          slug?: string | null
           updated_at?: string
         }
         Relationships: []
