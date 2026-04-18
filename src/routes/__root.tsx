@@ -78,7 +78,8 @@ function RootComponent() {
   return (
     <I18nProvider>
       <CartProvider>
-        <div className="flex min-h-screen flex-col">
+        <SplashIntro />
+        <div className="flex min-h-screen flex-col animate-fade-in">
           <AnnouncementBar />
           <Header />
           <main className="flex-1">
