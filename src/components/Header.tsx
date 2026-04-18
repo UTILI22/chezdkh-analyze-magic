@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { BRAND } from "@/lib/config";
+import logo from "@/assets/logo.png";
 
 export function Header() {
   const { t } = useI18n();
