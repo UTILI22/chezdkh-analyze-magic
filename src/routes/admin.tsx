@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import * as React from "react";
 import { LogOut, Package, ShoppingBag } from "lucide-react";
@@ -10,10 +10,18 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLoginRoute = location.pathname.startsWith("/admin/login");
   const [checking, setChecking] = React.useState(true);
   const [authed, setAuthed] = React.useState(false);
 
   React.useEffect(() => {
+    if (isLoginRoute) {
+      setChecking(false);
+      setAuthed(false);
+      return;
+    }
+
     let mounted = true;
 
     const verify = async (session: { user: { id: string } } | null) => {
@@ -54,12 +62,17 @@ function AdminLayout() {
       mounted = false;
       subscription.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, isLoginRoute]);
 
   const logout = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/admin/login" });
   };
+
+  // Login route renders standalone (no admin chrome, no auth check)
+  if (isLoginRoute) {
+    return <Outlet />;
+  }
 
   if (checking) {
     return (
