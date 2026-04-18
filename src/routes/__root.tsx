@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { SplashIntro } from "@/components/SplashIntro";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -77,7 +78,8 @@ function RootComponent() {
   return (
     <I18nProvider>
       <CartProvider>
-        <div className="flex min-h-screen flex-col">
+        <SplashIntro />
+        <div className="flex min-h-screen flex-col animate-fade-in">
           <AnnouncementBar />
           <Header />
           <main className="flex-1">
