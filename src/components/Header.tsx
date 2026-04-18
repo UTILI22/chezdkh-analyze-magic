@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { BRAND } from "@/lib/config";
+import logo from "@/assets/logo.png";
 
 export function Header() {
   const { t } = useI18n();
@@ -33,10 +34,13 @@ export function Header() {
         <Link
           to="/"
           className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0"
+          aria-label={BRAND.name}
         >
-          <span className="font-display text-2xl font-medium tracking-wider text-foreground md:text-3xl">
-            {BRAND.name}
-          </span>
+          <img
+            src={logo}
+            alt={`${BRAND.name} — ${BRAND.tagline}`}
+            className="h-12 w-auto md:h-16"
+          />
         </Link>
 
         {/* Desktop nav */}
