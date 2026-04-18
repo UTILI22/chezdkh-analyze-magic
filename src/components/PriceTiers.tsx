@@ -3,9 +3,9 @@
  */
 export function PriceTiers({ compact = false }: { compact?: boolean }) {
   const tiers = [
-    { qty: "1", price: "40€", note: "à l'unité" },
-    { qty: "2", price: "70€", note: "soit 35€ pièce" },
-    { qty: "3", price: "100€", note: "soit ~33€ pièce" },
+    { qty: "1", price: "40€" },
+    { qty: "2", price: "70€" },
+    { qty: "3", price: "100€" },
   ];
   if (compact) {
     return (
