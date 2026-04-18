@@ -82,8 +82,6 @@ function Index() {
         </div>
       </section>
 
-      {/* Offer */}
-      <PriceTiers />
     </div>
   );
 }
