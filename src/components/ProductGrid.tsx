@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { formatPrice } from "@/lib/cart";
+import { resolveProductImage } from "@/lib/product-images";
 
 type Product = {
   id: string;
@@ -23,6 +24,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-3">
       {products.map((p) => {
         const slug = p.slug ?? p.id;
+        const imgSrc = resolveProductImage(p.slug, p.image_url, 0);
         return (
           <Link
             key={p.id}
@@ -31,9 +33,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
             className="group block"
           >
             <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">
-              {p.image_url ? (
+              {imgSrc ? (
                 <img
-                  src={p.image_url}
+                  src={imgSrc}
                   alt={p.name}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

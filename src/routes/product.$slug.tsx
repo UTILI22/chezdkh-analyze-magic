@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-rout
 import { supabase } from "@/integrations/supabase/client";
 import { useCart, formatPrice } from "@/lib/cart";
 import { PriceTiers } from "@/components/PriceTiers";
+import { resolveProductImage } from "@/lib/product-images";
 import { Check, Minus, Plus, ChevronLeft } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -19,11 +20,13 @@ type Product = {
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }): Promise<{ product: Product }> => {
-    const { data, error } = await supabase
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
+    const query = supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url, slug, sizes, active")
-      .or(`slug.eq.${params.slug},id.eq.${params.slug}`)
-      .maybeSingle();
+      .select("id, name, description, price_cents, image_url, slug, sizes, active");
+    const { data, error } = isUuid
+      ? await query.eq("id", params.slug).maybeSingle()
+      : await query.eq("slug", params.slug).maybeSingle();
     if (error || !data) throw notFound();
     return { product: data as Product };
   },
@@ -113,9 +116,12 @@ function ProductPage() {
           <div className="grid gap-8 md:grid-cols-2 md:gap-12">
             {/* Image */}
             <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">
-              {product.image_url ? (
-                <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
-              ) : null}
+              {(() => {
+                const src = resolveProductImage(product.slug, product.image_url, 0);
+                return src ? (
+                  <img src={src} alt={product.name} className="h-full w-full object-cover" />
+                ) : null;
+              })()}
             </div>
 
             {/* Info */}
