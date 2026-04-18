@@ -94,7 +94,7 @@ function ProductPage() {
         id: `${product.id}__${size}`,
         name: product.name,
         priceCents: product.price_cents,
-        imageUrl: product.image_url,
+        imageUrl: resolveProductImage(product.slug, product.image_url, 0),
         size,
       },
       qty,
