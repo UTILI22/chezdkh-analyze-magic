@@ -16,6 +16,12 @@ function AdminLayout() {
   const [authed, setAuthed] = React.useState(false);
 
   React.useEffect(() => {
+    if (isLoginRoute) {
+      setChecking(false);
+      setAuthed(false);
+      return;
+    }
+
     let mounted = true;
 
     const verify = async (session: { user: { id: string } } | null) => {
@@ -56,7 +62,7 @@ function AdminLayout() {
       mounted = false;
       subscription.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, isLoginRoute]);
 
   const logout = async () => {
     await supabase.auth.signOut();
