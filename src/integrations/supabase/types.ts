@@ -191,6 +191,28 @@ export type Database = {
     }
     Functions: {
       admin_exists: { Args: never; Returns: boolean }
+      create_order: {
+        Args: {
+          _address: string
+          _city: string
+          _country: string
+          _email: string
+          _first_name: string
+          _items: Json
+          _last_name: string
+          _notes: string
+          _phone: string
+          _pickup: boolean
+          _postal: string
+          _shipping_cents: number
+          _subtotal_cents: number
+          _total_cents: number
+        }
+        Returns: {
+          id: string
+          order_number: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
