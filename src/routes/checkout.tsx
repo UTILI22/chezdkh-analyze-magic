@@ -102,20 +102,6 @@ function CheckoutPage() {
 
       const order = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
 
-      const itemsPayload = items.map((it) => ({
-        order_id: order.id,
-        product_id: it.id.includes("__") ? it.id.split("__")[0] : it.id,
-        product_name: it.size ? `${it.name} (${it.size})` : it.name,
-        unit_price_cents: it.priceCents,
-        quantity: it.quantity,
-      }));
-
-      const { error: itemsErr } = await supabase.from("order_items").insert(itemsPayload);
-      if (itemsErr) {
-        console.error("Items insert error:", itemsErr);
-        throw itemsErr;
-      }
-
       // WhatsApp recap (s'ouvre dans un nouvel onglet — l'utilisateur ou le commerçant peut envoyer)
       const lines = [
         `🛍️ *Nouvelle commande ${BRAND.name}*`,
