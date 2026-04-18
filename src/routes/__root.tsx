@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { SplashIntro } from "@/components/SplashIntro";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
