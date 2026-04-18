@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-rout
 import { supabase } from "@/integrations/supabase/client";
 import { useCart, formatPrice } from "@/lib/cart";
 import { PriceTiers } from "@/components/PriceTiers";
+import { resolveProductImage } from "@/lib/product-images";
 import { Check, Minus, Plus, ChevronLeft } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -115,9 +116,12 @@ function ProductPage() {
           <div className="grid gap-8 md:grid-cols-2 md:gap-12">
             {/* Image */}
             <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">
-              {product.image_url ? (
-                <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
-              ) : null}
+              {(() => {
+                const src = resolveProductImage(product.slug, product.image_url, 0);
+                return src ? (
+                  <img src={src} alt={product.name} className="h-full w-full object-cover" />
+                ) : null;
+              })()}
             </div>
 
             {/* Info */}
