@@ -3,9 +3,9 @@
  */
 export function PriceTiers({ compact = false }: { compact?: boolean }) {
   const tiers = [
-    { qty: "1", price: "40€", note: "à l'unité" },
-    { qty: "2", price: "70€", note: "soit 35€ pièce" },
-    { qty: "3", price: "100€", note: "soit ~33€ pièce" },
+    { qty: "1", price: "40€" },
+    { qty: "2", price: "70€" },
+    { qty: "3", price: "100€" },
   ];
   if (compact) {
     return (
@@ -25,7 +25,7 @@ export function PriceTiers({ compact = false }: { compact?: boolean }) {
       <div className="mx-auto max-w-5xl text-center">
         <p className="text-xs font-medium uppercase tracking-[0.3em] text-accent">Offre exclusive</p>
         <h2 className="mt-3 font-display text-3xl font-light md:text-4xl">
-          Plus vous en prenez, plus c'est doux pour votre porte-monnaie
+          Les économies grandissent avec vos choix.
         </h2>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {tiers.map((t) => (
@@ -36,7 +36,6 @@ export function PriceTiers({ compact = false }: { compact?: boolean }) {
               <p className="font-display text-5xl font-light text-accent">{t.qty}</p>
               <p className="mt-1 text-xs uppercase tracking-wider text-background/60">burkini{t.qty !== "1" ? "s" : ""}</p>
               <p className="mt-4 font-display text-3xl">{t.price}</p>
-              <p className="mt-1 text-xs text-background/60">{t.note}</p>
             </div>
           ))}
         </div>
