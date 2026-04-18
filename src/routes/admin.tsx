@@ -16,36 +16,39 @@ function AdminLayout() {
   React.useEffect(() => {
     let mounted = true;
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const verify = async (session: { user: { id: string } } | null) => {
       if (!mounted) return;
       if (!session) {
         setAuthed(false);
-        navigate({ to: "/admin/login" });
-      } else {
-        setAuthed(true);
-      }
-    });
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!mounted) return;
-      if (!session) {
+        setChecking(false);
         navigate({ to: "/admin/login" });
         return;
       }
-      // Verify admin role
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id);
+      if (!mounted) return;
       const isAdmin = (roles ?? []).some((r) => r.role === "admin");
       if (!isAdmin) {
         await supabase.auth.signOut();
+        setAuthed(false);
+        setChecking(false);
         navigate({ to: "/admin/login" });
         return;
       }
       setAuthed(true);
       setChecking(false);
+    };
+
+    // 1. Set up listener FIRST
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Defer to avoid deadlocks
+      setTimeout(() => verify(session), 0);
     });
+
+    // 2. Then check existing session
+    supabase.auth.getSession().then(({ data: { session } }) => verify(session));
 
     return () => {
       mounted = false;
@@ -58,13 +61,15 @@ function AdminLayout() {
     navigate({ to: "/admin/login" });
   };
 
-  if (checking || !authed) {
+  if (checking) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">Chargement...</p>
       </div>
     );
   }
+
+  if (!authed) return null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
