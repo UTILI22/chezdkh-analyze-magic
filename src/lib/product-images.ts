@@ -9,12 +9,18 @@ import ciel1 from "@/assets/products/ciel-d-ete-1.jpeg";
 import ciel2 from "@/assets/products/ciel-d-ete-2.jpeg";
 import sable1 from "@/assets/products/sable-dore-1.jpeg";
 import sable2 from "@/assets/products/sable-dore-2.jpeg";
+import rose1 from "@/assets/products/rose-poudre-1.jpeg";
+import rose2 from "@/assets/products/rose-poudre-2.jpeg";
+import gris1 from "@/assets/products/gris-1.jpeg";
+import gris2 from "@/assets/products/gris-2.jpeg";
 
 export const PRODUCT_IMAGES: Record<string, string[]> = {
   "noir-intense": [noir1, noir2],
   "vert-tropical": [vert1, vert2],
   "ciel-d-ete": [ciel1, ciel2],
   "sable-dore": [sable1, sable2],
+  "rose-poudre": [rose1, rose2],
+  "gris": [gris1, gris2],
 };
 
 /**
