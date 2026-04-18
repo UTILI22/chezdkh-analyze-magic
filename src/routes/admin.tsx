@@ -69,6 +69,11 @@ function AdminLayout() {
     navigate({ to: "/admin/login" });
   };
 
+  // Login route renders standalone (no admin chrome, no auth check)
+  if (isLoginRoute) {
+    return <Outlet />;
+  }
+
   if (checking) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
