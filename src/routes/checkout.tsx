@@ -71,31 +71,36 @@ function CheckoutPage() {
     try {
       const data = schema.parse(form);
 
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          customer_first_name: data.firstName,
-          customer_last_name: data.lastName,
-          customer_email: data.email,
-          customer_phone: data.phone,
-          country: data.country,
-          city: data.city || null,
-          postal_code: data.postal || null,
-          address: data.address || null,
-          pickup_brussels: data.pickup,
-          shipping_cents: shipping,
-          subtotal_cents: subtotalCents,
-          total_cents: total,
-          notes: data.notes || null,
-          status: "pending",
-        })
-        .select("id, order_number")
-        .single();
+      const itemsPayload = items.map((it) => ({
+        product_id: it.id.includes("__") ? it.id.split("__")[0] : it.id,
+        product_name: it.size ? `${it.name} (${it.size})` : it.name,
+        unit_price_cents: it.priceCents,
+        quantity: it.quantity,
+      }));
 
-      if (orderErr || !order) {
-        console.error("Order insert error:", orderErr);
-        throw orderErr ?? new Error("Order failed");
+      const { data: rpcResult, error: rpcErr } = await supabase.rpc("create_order", {
+        _first_name: data.firstName,
+        _last_name: data.lastName,
+        _email: data.email,
+        _phone: data.phone,
+        _country: data.country,
+        _city: data.city || "",
+        _postal: data.postal || "",
+        _address: data.address || "",
+        _pickup: data.pickup,
+        _shipping_cents: shipping,
+        _subtotal_cents: subtotalCents,
+        _total_cents: total,
+        _notes: data.notes || "",
+        _items: itemsPayload,
+      });
+
+      if (rpcErr || !rpcResult || (Array.isArray(rpcResult) && rpcResult.length === 0)) {
+        console.error("RPC error:", rpcErr);
+        throw rpcErr ?? new Error("Order failed");
       }
+
+      const order = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
 
       const itemsPayload = items.map((it) => ({
         order_id: order.id,
