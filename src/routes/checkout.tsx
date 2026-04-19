@@ -83,6 +83,14 @@ function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Anti-spam : honeypot rempli ou form soumis trop vite ⇒ on simule un succès silencieux.
+    const spam = detectSpam({ honeypot, startedAt: formStartedAt.current });
+    if (spam) {
+      console.warn("Submission blocked:", spam);
+      // Faux succès pour ne pas révéler la détection au bot
+      toast.success(t("checkout.success"));
+      return;
+    }
     setSubmitting(true);
     try {
       const data = schema.parse(form);
