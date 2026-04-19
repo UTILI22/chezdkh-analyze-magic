@@ -3,6 +3,13 @@ import { useCart, formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { SHIPPING_CENTS, FREE_SHIPPING_COUNTRY, whatsappLink, BRAND } from "@/lib/config";
+import {
+  cleanShortText,
+  cleanLongText,
+  emailSchema,
+  phoneSchema,
+  detectSpam,
+} from "@/lib/anti-spam";
 import * as React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,15 +32,15 @@ const COUNTRIES = [
 ];
 
 const schema = z.object({
-  firstName: z.string().trim().min(1).max(80),
-  lastName: z.string().trim().min(1).max(80),
-  email: z.string().trim().email().max(200),
-  phone: z.string().trim().min(5).max(40),
+  firstName: cleanShortText(80),
+  lastName: cleanShortText(80),
+  email: emailSchema,
+  phone: phoneSchema,
   country: z.string().min(1).max(80),
-  city: z.string().trim().max(120).optional(),
-  postal: z.string().trim().max(20).optional(),
-  address: z.string().trim().max(300).optional(),
-  notes: z.string().trim().max(500).optional(),
+  city: cleanLongText(120).optional().or(z.literal("")),
+  postal: z.string().trim().max(20).regex(/^[A-Za-z0-9 \-]*$/, "Code postal invalide").optional().or(z.literal("")),
+  address: cleanLongText(300, true).optional().or(z.literal("")),
+  notes: cleanLongText(500).optional().or(z.literal("")),
   pickup: z.boolean(),
 });
 
