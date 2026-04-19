@@ -57,18 +57,14 @@ export const cleanShortText = (max: number) =>
     .refine(noHtml, "Le HTML n'est pas autorisé");
 
 /** Bloc commun pour un texte long (notes, message). Liens autorisés ou non selon le contexte. */
-export const cleanLongText = (max: number, allowUrls = false) => {
-  let s = z
+export const cleanLongText = (max: number, allowUrls = false) =>
+  z
     .string()
     .trim()
     .max(max, `Maximum ${max} caractères`)
     .refine(noControlChars, "Caractères invalides")
-    .refine(noHtml, "Le HTML n'est pas autorisé");
-  if (!allowUrls) {
-    s = s.refine(noUrls, "Les liens ne sont pas autorisés");
-  }
-  return s;
-};
+    .refine(noHtml, "Le HTML n'est pas autorisé")
+    .refine((s) => allowUrls || noUrls(s), "Les liens ne sont pas autorisés");
 
 /** Téléphone : chiffres, espaces, +, -, (, ), . — entre 5 et 40 caractères. */
 export const phoneSchema = z
