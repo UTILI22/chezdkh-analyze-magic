@@ -74,11 +74,14 @@ function extractSizeFromId(id: string | null): string | null {
 
 function OrderDetailPage() {
   const { orderId } = Route.useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = React.useState<OrderDetail | null>(null);
   const [items, setItems] = React.useState<Item[]>([]);
   const [products, setProducts] = React.useState<Record<string, ProductInfo>>({});
   const [loading, setLoading] = React.useState(true);
   const [updating, setUpdating] = React.useState(false);
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
 
   const load = React.useCallback(async () => {
     setLoading(true);
