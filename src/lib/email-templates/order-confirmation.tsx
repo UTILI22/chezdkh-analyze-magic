@@ -1,17 +1,4 @@
 import * as React from 'react'
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
 import type { TemplateEntry } from './registry'
 
 const SITE_NAME = 'QalbOfSilk'
@@ -60,80 +47,87 @@ const OrderConfirmationEmail = ({
   whatsappUrl = 'https://wa.me/32465452912',
   instagramUrl = 'https://www.instagram.com/qalb_ofsilk/',
   snapchatUrl = 'https://www.snapchat.com/@qalb_ofsilk',
-}: OrderConfirmationProps) => (
-  <Html lang="fr" dir="ltr">
-    <Head />
-    <Preview>
-      Merci {firstName ? firstName : ''} ! Votre commande {orderNumber ?? ''} est bien reçue.
-    </Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Heading style={brand}>{SITE_NAME}</Heading>
-          <Text style={tagline}>{TAGLINE}</Text>
-        </Section>
+}: OrderConfirmationProps) => {
+  const previewText = `Merci ${firstName ? firstName : ''} ! Votre commande ${orderNumber ?? ''} est bien reçue.`.trim()
 
-        <Section style={hero}>
-          <Heading style={h1}>
+  return (
+  <html lang="fr" dir="ltr">
+    <head>
+      <title>{SITE_NAME}</title>
+      <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="x-apple-disable-message-reformatting" />
+    </head>
+    <body style={main}>
+      <div style={{ display: 'none', overflow: 'hidden', lineHeight: '1px', opacity: 0, maxHeight: 0, maxWidth: 0 }}>
+        {previewText}
+      </div>
+      <div style={container}>
+        <div style={header}>
+          <h1 style={brand}>{SITE_NAME}</h1>
+          <p style={tagline}>{TAGLINE}</p>
+        </div>
+
+        <div style={hero}>
+          <h2 style={h1}>
             {firstName ? `Merci, ${firstName} 🌸` : 'Merci pour votre commande 🌸'}
-          </Heading>
-          <Text style={lead}>
+          </h2>
+          <p style={lead}>
             Votre commande a bien été enregistrée. Nous revenons vers vous très
             rapidement avec les détails de paiement et de livraison.
-          </Text>
+          </p>
           {orderNumber && (
-            <Section style={orderBadge}>
-              <Text style={orderBadgeLabel}>Numéro de commande</Text>
-              <Text style={orderBadgeValue}>{orderNumber}</Text>
-            </Section>
+            <div style={orderBadge}>
+              <p style={orderBadgeLabel}>Numéro de commande</p>
+              <p style={orderBadgeValue}>{orderNumber}</p>
+            </div>
           )}
-        </Section>
+        </div>
 
         {items.length > 0 && (
-          <Section style={card}>
-            <Heading as="h2" style={h2}>Récapitulatif</Heading>
+          <div style={card}>
+            <h3 style={h2}>Récapitulatif</h3>
             {items.map((it, i) => (
-              <Section key={i} style={itemRow}>
-                <Text style={itemName}>
+              <div key={i} style={itemRow}>
+                <p style={itemName}>
                   {it.name}
                   {it.size ? ` — ${it.size}` : ''}{' '}
                   <span style={itemQty}>×{it.quantity}</span>
-                </Text>
-                <Text style={itemPrice}>
+                </p>
+                <p style={itemPrice}>
                   {formatPrice(it.unit_price_cents * it.quantity)}
-                </Text>
-              </Section>
+                </p>
+              </div>
             ))}
-            <Hr style={hr} />
-            <Section style={totalRow}>
-              <Text style={totalLabel}>Sous-total</Text>
-              <Text style={totalValue}>{formatPrice(subtotalCents)}</Text>
-            </Section>
-            <Section style={totalRow}>
-              <Text style={totalLabel}>Livraison</Text>
-              <Text style={totalValue}>
+            <hr style={hr} />
+            <div style={totalRow}>
+              <p style={totalLabel}>Sous-total</p>
+              <p style={totalValue}>{formatPrice(subtotalCents)}</p>
+            </div>
+            <div style={totalRow}>
+              <p style={totalLabel}>Livraison</p>
+              <p style={totalValue}>
                 {shippingCents === 0 ? 'Gratuit' : formatPrice(shippingCents)}
-              </Text>
-            </Section>
-            <Hr style={hr} />
-            <Section style={totalRow}>
-              <Text style={grandLabel}>Total</Text>
-              <Text style={grandValue}>{formatPrice(totalCents)}</Text>
-            </Section>
-          </Section>
+              </p>
+            </div>
+            <hr style={hr} />
+            <div style={totalRow}>
+              <p style={grandLabel}>Total</p>
+              <p style={grandValue}>{formatPrice(totalCents)}</p>
+            </div>
+          </div>
         )}
 
-        <Section style={card}>
-          <Heading as="h2" style={h2}>
+        <div style={card}>
+          <h3 style={h2}>
             {pickup ? 'Mode de réception' : 'Livraison'}
-          </Heading>
+          </h3>
           {pickup ? (
-            <Text style={text}>
+            <p style={text}>
               ✋ Remise en main propre à <strong>Bruxelles</strong>. Nous vous
               contacterons pour convenir d'un point de rendez-vous.
-            </Text>
+            </p>
           ) : (
-            <Text style={text}>
+            <p style={text}>
               {address && <>{address}<br /></>}
               {(postal || city) && (
                 <>
@@ -142,35 +136,35 @@ const OrderConfirmationEmail = ({
                 </>
               )}
               {country}
-            </Text>
+            </p>
           )}
-        </Section>
+        </div>
 
-        <Section style={ctaCard}>
-          <Heading as="h2" style={h2Light}>Une question ? Restons en contact</Heading>
-          <Text style={ctaText}>
+        <div style={ctaCard}>
+          <h3 style={h2Light}>Une question ? Restons en contact</h3>
+          <p style={ctaText}>
             Suivez-nous et écrivez-nous quand vous voulez 💌
-          </Text>
-          <Section style={btnRow}>
-            <Button href={whatsappUrl} style={btnWhatsapp}>WhatsApp</Button>
-            <Button href={instagramUrl} style={btnInstagram}>Instagram</Button>
-            <Button href={snapchatUrl} style={btnSnapchat}>Snapchat</Button>
-          </Section>
-        </Section>
+          </p>
+          <div style={btnRow}>
+            <a href={whatsappUrl} style={btnWhatsapp}>WhatsApp</a>
+            <a href={instagramUrl} style={btnInstagram}>Instagram</a>
+            <a href={snapchatUrl} style={btnSnapchat}>Snapchat</a>
+          </div>
+        </div>
 
-        <Hr style={hr} />
-        <Text style={footer}>
+        <hr style={hr} />
+        <p style={footer}>
           Une question ? Écrivez-nous à{' '}
-          <Link href="mailto:qalbofsilk0@gmail.com" style={link}>
+          <a href="mailto:qalbofsilk0@gmail.com" style={link}>
             qalbofsilk0@gmail.com
-          </Link>
+          </a>
           <br />
           {SITE_NAME} — {TAGLINE}
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+        </p>
+      </div>
+    </body>
+  </html>
+)}
 
 export const template = {
   component: OrderConfirmationEmail,

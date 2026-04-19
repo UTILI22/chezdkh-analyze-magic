@@ -1,15 +1,4 @@
 import * as React from 'react'
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
 import type { TemplateEntry } from './registry'
 
 interface OrderItem {
@@ -55,37 +44,43 @@ const OwnerOrderEmail = ({
   shippingCents = 0,
   totalCents = 0,
   notes,
-}: OwnerOrderNotificationProps) => (
-  <Html lang="fr" dir="ltr">
-    <Head />
-    <Preview>
-      🛍️ Nouvelle commande {orderNumber ?? ''} — {formatPrice(totalCents)}
-    </Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>🛍️ Nouvelle commande</Heading>
-        {orderNumber && <Text style={subtitle}>{orderNumber}</Text>}
+}: OwnerOrderNotificationProps) => {
+  const previewText = `🛍️ Nouvelle commande ${orderNumber ?? ''} — ${formatPrice(totalCents)}`
 
-        <Hr style={hr} />
+  return (
+  <html lang="fr" dir="ltr">
+    <head>
+      <title>Nouvelle commande</title>
+      <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body style={main}>
+      <div style={{ display: 'none', overflow: 'hidden', lineHeight: '1px', opacity: 0, maxHeight: 0, maxWidth: 0 }}>
+        {previewText}
+      </div>
+      <div style={container}>
+        <h1 style={h1}>🛍️ Nouvelle commande</h1>
+        {orderNumber && <p style={subtitle}>{orderNumber}</p>}
 
-        <Heading as="h2" style={h2}>Client</Heading>
-        <Text style={text}>
+        <hr style={hr} />
+
+        <h2 style={h2}>Client</h2>
+        <p style={text}>
           <strong>{customerName}</strong>
           <br />
           📧 {customerEmail}
           <br />
           📱 {customerPhone}
-        </Text>
+        </p>
 
-        <Hr style={hr} />
+        <hr style={hr} />
 
-        <Heading as="h2" style={h2}>
+        <h2 style={h2}>
           {pickup ? 'Mode de réception' : 'Livraison'}
-        </Heading>
+        </h2>
         {pickup ? (
-          <Text style={text}>✋ Remise en main propre Bruxelles</Text>
+          <p style={text}>✋ Remise en main propre Bruxelles</p>
         ) : (
-          <Text style={text}>
+          <p style={text}>
             {address && <>{address}<br /></>}
             {(postal || city) && (
               <>
@@ -94,41 +89,41 @@ const OwnerOrderEmail = ({
               </>
             )}
             {country}
-          </Text>
+          </p>
         )}
 
-        <Hr style={hr} />
+        <hr style={hr} />
 
-        <Heading as="h2" style={h2}>Articles</Heading>
+        <h2 style={h2}>Articles</h2>
         {items.map((it, i) => (
-          <Text key={i} style={itemText}>
+          <p key={i} style={itemText}>
             • {it.name}
             {it.size ? ` (${it.size})` : ''} ×{it.quantity} —{' '}
             {formatPrice(it.unit_price_cents * it.quantity)}
-          </Text>
+          </p>
         ))}
 
-        <Hr style={hr} />
+        <hr style={hr} />
 
-        <Text style={text}>
+        <p style={text}>
           Sous-total : {formatPrice(subtotalCents)}
           <br />
           Livraison : {shippingCents === 0 ? 'Gratuit' : formatPrice(shippingCents)}
           <br />
           <strong style={total}>Total : {formatPrice(totalCents)}</strong>
-        </Text>
+        </p>
 
         {notes && (
           <>
-            <Hr style={hr} />
-            <Heading as="h2" style={h2}>Notes du client</Heading>
-            <Text style={text}>{notes}</Text>
+            <hr style={hr} />
+            <h2 style={h2}>Notes du client</h2>
+            <p style={text}>{notes}</p>
           </>
         )}
-      </Container>
-    </Body>
-  </Html>
-)
+      </div>
+    </body>
+  </html>
+)}
 
 export const template = {
   component: OwnerOrderEmail,
