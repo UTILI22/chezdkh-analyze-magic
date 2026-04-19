@@ -39,7 +39,8 @@ export function Header() {
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-24 w-auto invert md:h-32"
+            className="h-24 w-auto md:h-32"
+            style={{ filter: "invert(1) hue-rotate(180deg)" }}
           />
         </Link>
 
