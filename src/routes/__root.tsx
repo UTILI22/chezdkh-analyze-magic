@@ -33,33 +33,59 @@ function NotFoundComponent() {
   );
 }
 
+const ORG_JSONLD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "QalbOfSilk",
+  url: "https://chezdkh-analyze-magic.lovable.app",
+  logo: "https://chezdkh-analyze-magic.lovable.app/favicon.ico",
+  description:
+    "QalbOfSilk — Burkinis élégants et pudiques. Remise en main propre à Bruxelles, expédition mondiale.",
+  sameAs: [
+    "https://www.instagram.com/qalb_ofsilk/",
+    "https://www.snapchat.com/@qalb_ofsilk",
+  ],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      email: "qalbofsilk0@gmail.com",
+      contactType: "customer support",
+      areaServed: "Worldwide",
+      availableLanguage: ["French", "English"],
+    },
+  ],
+});
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "QalbOfSilk — L'élégance de la pudeur" },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
+      { name: "author", content: "QalbOfSilk" },
+      { name: "theme-color", content: "#0f0f0f" },
+      { property: "og:site_name", content: "QalbOfSilk" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "fr_FR" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { title: "QalbOfSilk — Burkinis élégants & pudiques | L'élégance de la pudeur" },
       {
         name: "description",
         content:
-          "QalbOfSilk — Burkinis élégants et pudiques. Remise en main propre à Bruxelles, expédition mondiale.",
+          "QalbOfSilk : burkinis élégants, pudiques et confortables. Tissu séchage rapide, coupe pensée pour la pudeur. Remise en main propre à Bruxelles, livraison mondiale. Pack 2 = 70€, 3 = 100€.",
       },
-      { name: "author", content: "QalbOfSilk" },
-      { property: "og:title", content: "QalbOfSilk — L'élégance de la pudeur" },
-      {
-        property: "og:description",
-        content: "Burkinis élégants. Remise en main propre à Bruxelles, expédition mondiale.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "QalbOfSilk — L'élégance de la pudeur" },
-      { name: "description", content: "ChezDKH Insights is a website for a fashion brand, showcasing products with detailed descriptions and imagery." },
-      { property: "og:description", content: "ChezDKH Insights is a website for a fashion brand, showcasing products with detailed descriptions and imagery." },
-      { name: "twitter:description", content: "ChezDKH Insights is a website for a fashion brand, showcasing products with detailed descriptions and imagery." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b30c653b-1624-4152-b864-b862e26dd565/id-preview-04f6e66c--640d362b-d491-4f90-8c25-d74564dc7d25.lovable.app-1776558122647.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b30c653b-1624-4152-b864-b862e26dd565/id-preview-04f6e66c--640d362b-d491-4f90-8c25-d74564dc7d25.lovable.app-1776558122647.png" },
+      { name: "keywords", content: "burkini, burkini élégant, burkini pudique, maillot pudique, burkini Bruxelles, burkini Belgique, QalbOfSilk, mode pudique, hijab swimwear" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: ORG_JSONLD,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
