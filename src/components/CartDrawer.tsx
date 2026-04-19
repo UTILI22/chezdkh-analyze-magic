@@ -29,15 +29,17 @@ export function CartDrawer() {
     return () => document.removeEventListener("keydown", onKey);
   }, [isOpen, closeCart]);
 
-  // Lock body scroll while open
+  // Lock body scroll while open — restore to empty string (not a captured value
+  // which can wrongly be "hidden" if the drawer reopens before cleanup runs).
   React.useEffect(() => {
     if (typeof document === "undefined") return;
     if (isOpen) {
-      const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = prev;
+        document.body.style.overflow = "";
       };
+    } else {
+      document.body.style.overflow = "";
     }
   }, [isOpen]);
 
