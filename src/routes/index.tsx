@@ -16,6 +16,28 @@ type Product = {
 };
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "QalbOfSilk — Burkinis élégants & pudiques | Bruxelles & livraison mondiale" },
+      {
+        name: "description",
+        content:
+          "Découvrez QalbOfSilk : burkinis pudiques au tissu séchage rapide, coupe élégante et confortable. Pack 2 = 70€, 3 = 100€. Remise en main propre à Bruxelles, expédition mondiale.",
+      },
+      { property: "og:title", content: "QalbOfSilk — Burkinis élégants & pudiques" },
+      {
+        property: "og:description",
+        content:
+          "Burkinis pudiques, élégants et confortables. Pack 2 = 70€, 3 = 100€. Bruxelles & livraison mondiale.",
+      },
+      { name: "twitter:title", content: "QalbOfSilk — Burkinis élégants & pudiques" },
+      {
+        name: "twitter:description",
+        content: "Burkinis pudiques. Pack 2 = 70€, 3 = 100€. Bruxelles & monde.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/" }],
+  }),
   loader: async (): Promise<{ products: Product[] }> => {
     const { data, error } = await supabase
       .from("products")
