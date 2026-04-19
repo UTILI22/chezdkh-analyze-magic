@@ -85,23 +85,24 @@ function AdminLayout() {
   if (!authed) return null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-display text-3xl">Panel Admin</h1>
+    <div className="mx-auto max-w-7xl px-3 py-5 md:px-6 md:py-8">
+      <div className="mb-6 flex items-center justify-between gap-3 md:mb-8">
+        <h1 className="font-display text-xl md:text-3xl">Panel Admin</h1>
         <button
           onClick={logout}
-          className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs uppercase tracking-wider hover:bg-muted"
+          className="flex flex-shrink-0 items-center gap-2 rounded-md border border-border px-3 py-2 text-[11px] uppercase tracking-wider hover:bg-muted md:text-xs"
         >
-          <LogOut className="h-4 w-4" /> Déconnexion
+          <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline">Déconnexion</span>
         </button>
       </div>
 
-      <nav className="mb-8 flex gap-2 border-b border-border">
+      <nav className="mb-6 flex gap-1 overflow-x-auto border-b border-border md:mb-8 md:gap-2">
         <Link
           to="/admin"
           activeOptions={{ exact: true }}
           activeProps={{ className: "border-accent text-accent" }}
-          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium hover:text-accent"
+          className="flex-shrink-0 border-b-2 border-transparent px-3 py-2 text-sm font-medium hover:text-accent md:px-4"
         >
           <span className="inline-flex items-center gap-2">
             <ShoppingBag className="h-4 w-4" /> Commandes
@@ -110,7 +111,7 @@ function AdminLayout() {
         <Link
           to="/admin/products"
           activeProps={{ className: "border-accent text-accent" }}
-          className="border-b-2 border-transparent px-4 py-2 text-sm font-medium hover:text-accent"
+          className="flex-shrink-0 border-b-2 border-transparent px-3 py-2 text-sm font-medium hover:text-accent md:px-4"
         >
           <span className="inline-flex items-center gap-2">
             <Package className="h-4 w-4" /> Produits

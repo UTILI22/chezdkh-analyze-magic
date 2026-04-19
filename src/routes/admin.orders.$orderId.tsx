@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import * as React from "react";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, Phone, MapPin, Package as PackageIcon, MessageSquare } from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, Package as PackageIcon, MessageSquare, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type OrderDetail = {
   id: string;
@@ -64,11 +74,14 @@ function extractSizeFromId(id: string | null): string | null {
 
 function OrderDetailPage() {
   const { orderId } = Route.useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = React.useState<OrderDetail | null>(null);
   const [items, setItems] = React.useState<Item[]>([]);
   const [products, setProducts] = React.useState<Record<string, ProductInfo>>({});
   const [loading, setLoading] = React.useState(true);
   const [updating, setUpdating] = React.useState(false);
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -119,6 +132,27 @@ function OrderDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error: itemsErr } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+    if (itemsErr) {
+      setDeleting(false);
+      toast.error("Erreur lors de la suppression des produits");
+      return;
+    }
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+    setDeleting(false);
+    if (error) {
+      toast.error("Erreur lors de la suppression");
+      return;
+    }
+    toast.success("Commande supprimée");
+    navigate({ to: "/admin" });
+  };
+
   if (loading) return <p className="text-sm text-muted-foreground">Chargement...</p>;
   if (!order) return <p>Commande introuvable.</p>;
 
@@ -134,9 +168,9 @@ function OrderDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 className="font-display text-3xl">Commande {order.order_number}</h2>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3 md:gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl md:text-3xl">Commande {order.order_number}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Passée le{" "}
             {new Date(order.created_at).toLocaleString("fr-BE", {
@@ -148,12 +182,20 @@ function OrderDetailPage() {
             })}
           </p>
         </div>
-        <span
-          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${currentStatus.cls}`}
-        >
-          <span>{currentStatus.emoji}</span>
-          <span>{currentStatus.label}</span>
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${currentStatus.cls}`}
+          >
+            <span>{currentStatus.emoji}</span>
+            <span>{currentStatus.label}</span>
+          </span>
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Supprimer
+          </button>
+        </div>
       </div>
 
       {/* Status switcher */}
@@ -301,6 +343,32 @@ function OrderDetailPage() {
           <p className="whitespace-pre-wrap text-sm leading-relaxed">{order.notes}</p>
         </div>
       )}
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer cette commande ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La commande <strong>{order.order_number}</strong> de{" "}
+              {order.customer_first_name} {order.customer_last_name} sera définitivement
+              supprimée. Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
