@@ -8,7 +8,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Commande — QalbOfSilk" }] }),
+  head: () => ({
+    meta: [
+      { title: "Commande — QalbOfSilk" },
+      { name: "description", content: "Finalisez votre commande QalbOfSilk en toute sécurité." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: CheckoutPage,
 });
 

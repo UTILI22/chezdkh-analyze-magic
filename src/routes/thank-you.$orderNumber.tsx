@@ -3,7 +3,12 @@ import * as React from "react";
 import { Sparkles, MessageCircle, Home } from "lucide-react";
 
 export const Route = createFileRoute("/thank-you/$orderNumber")({
-  head: () => ({ meta: [{ title: "Merci pour votre commande — QalbOfSilk" }] }),
+  head: () => ({
+    meta: [
+      { title: "Merci pour votre commande — QalbOfSilk" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: ThankYouPage,
 });
 

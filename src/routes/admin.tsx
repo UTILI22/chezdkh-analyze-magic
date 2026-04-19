@@ -4,7 +4,12 @@ import * as React from "react";
 import { LogOut, Package, ShoppingBag } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — QalbOfSilk" }] }),
+  head: () => ({
+    meta: [
+      { title: "Admin — QalbOfSilk" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminLayout,
 });
 
