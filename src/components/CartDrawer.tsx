@@ -1,6 +1,6 @@
 import { useCart, formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import * as React from "react";
 import { SocialRow } from "@/components/SocialIcons";
@@ -178,7 +178,7 @@ export function CartDrawer() {
               <button
                 onClick={() => {
                   closeCart();
-                  navigate({ to: "/checkout" });
+                  navigate("/checkout");
                 }}
                 className="w-full rounded-md bg-foreground py-3 text-xs font-medium uppercase tracking-wider text-background transition-opacity hover:opacity-90"
               >
