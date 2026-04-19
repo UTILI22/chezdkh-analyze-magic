@@ -83,7 +83,7 @@ export function Header() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-background shadow-2xl">
+          <div className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-[oklch(0.98_0.01_85)] shadow-2xl">
             {/* Drawer header */}
             <div className="flex items-center justify-between border-b border-border px-6 py-5">
               <Link to="/" onClick={() => setMobileOpen(false)} aria-label={BRAND.name}>
