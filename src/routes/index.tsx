@@ -12,20 +12,21 @@ type Product = {
   price_cents: number;
   image_url: string | null;
   slug: string | null;
+  compare_at_price_cents: number | null;
 };
 
 export const Route = createFileRoute("/")({
   loader: async (): Promise<{ products: Product[] }> => {
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url, slug")
+      .select("id, name, description, price_cents, image_url, slug, compare_at_price_cents" as "*")
       .eq("active", true)
       .order("position", { ascending: true });
     if (error) {
       console.error(error);
       return { products: [] };
     }
-    return { products: data ?? [] };
+    return { products: (data ?? []) as unknown as Product[] };
   },
   component: Index,
 });
