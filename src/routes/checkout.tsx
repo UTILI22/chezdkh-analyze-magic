@@ -126,36 +126,6 @@ function CheckoutPage() {
 
       const order = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
 
-      // WhatsApp recap (s'ouvre dans un nouvel onglet — l'utilisateur ou le commerçant peut envoyer)
-      const lines = [
-        `🛍️ *Nouvelle commande ${BRAND.name}*`,
-        `N° ${order.order_number}`,
-        ``,
-        `*Client:* ${data.firstName} ${data.lastName}`,
-        `*Email:* ${data.email}`,
-        `*Tél:* ${data.phone}`,
-        `*Pays:* ${data.country}`,
-        data.city ? `*Ville:* ${data.city}` : "",
-        data.postal ? `*Code postal:* ${data.postal}` : "",
-        data.address ? `*Adresse:* ${data.address}` : "",
-        data.pickup ? `*Mode:* Remise en main propre Bruxelles` : `*Mode:* Expédition`,
-        ``,
-        `*Produits:*`,
-        ...items.map((i) => `- ${i.name}${i.size ? ` (${i.size})` : ""} x${i.quantity}`),
-        ``,
-        `Sous-total: ${formatPrice(subtotalCents)}`,
-        `Livraison: ${formatPrice(shipping)}`,
-        `*Total: ${formatPrice(total)}*`,
-        data.notes ? `\nNotes: ${data.notes}` : "",
-      ].filter(Boolean);
-
-      const waUrl = whatsappLink(lines.join("\n"));
-
-      // Sauvegarde l'URL WhatsApp pour la page de remerciement (au cas où le pop-up est bloqué)
-      try { sessionStorage.setItem("qos.lastWa", waUrl); } catch { /* ignore */ }
-      // Tente d'ouvrir WhatsApp automatiquement
-      window.open(waUrl, "_blank", "noopener,noreferrer");
-
       clearCart();
       toast.success(t("checkout.success"));
       navigate({
