@@ -15,8 +15,9 @@ type CartCtx = {
   openCart: () => void;
   closeCart: () => void;
   addItem: (item: Omit<CartItem, "quantity">, qty?: number) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, qty: number) => void;
+  /** key = `${item.id}__${item.size ?? ""}` */
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, qty: number) => void;
   clearCart: () => void;
   /** Total brut (somme des prix unitaires × quantité) — sert au comparatif */
   rawSubtotalCents: number;

@@ -110,10 +110,20 @@ function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addItem, openCart } = useCart();
   const availableSizes = product.sizes ?? [];
-  const firstAvailable = availableSizes[1] ?? availableSizes[0] ?? "";
+  // Sélectionne la première taille disponible (S si dispo, sinon la suivante).
+  const firstAvailable = availableSizes[0] ?? "";
   const [size, setSize] = React.useState<string>(firstAvailable);
   const [qty, setQty] = React.useState(1);
   const [activeImg, setActiveImg] = React.useState(0);
+
+  // Resync taille si on change de produit ou si la taille courante n'est plus disponible
+  // (ex : admin a désactivé la taille pendant la session).
+  React.useEffect(() => {
+    if (!availableSizes.includes(size)) {
+      setSize(availableSizes[0] ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id, product.sizes]);
 
   const images = React.useMemo(() => {
     return [0, 1]

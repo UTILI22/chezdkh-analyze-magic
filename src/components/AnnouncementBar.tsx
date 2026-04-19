@@ -1,23 +1,22 @@
-import { useI18n } from "@/lib/i18n";
-
+/**
+ * Bandeau marquee — le translateX(-50%) suppose que le contenu soit dupliqué
+ * EXACTEMENT 2 fois (donc -50% tombe pile sur le début du second bloc et la
+ * boucle est invisible). Toute autre quantité crée un saut à la fin du cycle.
+ */
 export function AnnouncementBar() {
-  const { t } = useI18n();
-  const text = t("announce.text");
-  // Repeat for marquee continuity
-  const items = Array.from({ length: 6 }, (_, i) => i);
+  const Block = () => (
+    <span className="flex flex-shrink-0 items-center gap-12 px-6">
+      <span>REMISE EN MAIN PROPRE SUR BRUXELLES</span>
+      <span className="text-accent">✦</span>
+      <span>EXPÉDITION DANS LE MONDE ENTIER</span>
+      <span className="text-accent">✦</span>
+    </span>
+  );
   return (
     <div className="overflow-hidden border-b border-border bg-foreground py-2 text-background">
-      <div className="flex w-max animate-marquee gap-12 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.2em]">
-        {items.map((i) => (
-          <span key={i} className="flex items-center gap-12">
-            <span className="flex items-center gap-3">
-              <span>REMISE EN MAIN PROPRE SUR BRUXELLES</span>
-              <span className="text-accent">✦</span>
-              <span>EXPÉDITION DANS LE MONDE ENTIER</span>
-            </span>
-            <span className="text-accent">✦</span>
-          </span>
-        ))}
+      <div className="flex w-max animate-marquee whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.2em]">
+        <Block />
+        <Block />
       </div>
     </div>
   );
