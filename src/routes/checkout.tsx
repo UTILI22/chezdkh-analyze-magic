@@ -126,6 +126,35 @@ function CheckoutPage() {
 
       const order = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
 
+      // Envoie les emails de confirmation (client + propriétaire) en arrière-plan,
+      // sans bloquer la redirection vers la page de remerciement.
+      fetch("/api/order-emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderNumber: order.order_number,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          country: data.country,
+          city: data.city || null,
+          postal: data.postal || null,
+          address: data.address || null,
+          pickup: data.pickup,
+          items: items.map((it) => ({
+            name: it.name,
+            size: it.size,
+            quantity: it.quantity,
+            unit_price_cents: it.priceCents,
+          })),
+          subtotalCents,
+          shippingCents: shipping,
+          totalCents: total,
+          notes: data.notes || null,
+        }),
+      }).catch((err) => console.error("order-emails failed", err));
+
       clearCart();
       toast.success(t("checkout.success"));
       navigate({
