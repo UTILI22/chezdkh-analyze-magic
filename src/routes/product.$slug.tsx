@@ -31,28 +31,53 @@ export const Route = createFileRoute("/product/$slug")({
     if (error || !data) throw notFound();
     return { product: data as unknown as Product };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.product.name} — QalbOfSilk` },
-          {
-            name: "description",
-            content: loaderData.product.description ?? `${loaderData.product.name} — Burkini QalbOfSilk`,
-          },
-          { property: "og:title", content: `${loaderData.product.name} — QalbOfSilk` },
-          {
-            property: "og:description",
-            content: loaderData.product.description ?? "",
-          },
-          ...(loaderData.product.image_url
-            ? [
-                { property: "og:image", content: loaderData.product.image_url },
-                { property: "twitter:image", content: loaderData.product.image_url },
-              ]
-            : []),
-        ]
-      : [],
-  }),
+  head: ({ loaderData, params }) => {
+    if (!loaderData) return {};
+    const p = loaderData.product;
+    const url = `https://chezdkh-analyze-magic.lovable.app/product/${params.slug}`;
+    const priceEur = (p.price_cents / 100).toFixed(2);
+    const productJsonLd = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: p.name,
+      description: p.description ?? `${p.name} — Burkini QalbOfSilk`,
+      image: p.image_url ? [p.image_url] : undefined,
+      sku: p.id,
+      brand: { "@type": "Brand", name: "QalbOfSilk" },
+      offers: {
+        "@type": "Offer",
+        url,
+        priceCurrency: "EUR",
+        price: priceEur,
+        availability: p.active
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+      },
+    });
+    return {
+      meta: [
+        { title: `${p.name} — Burkini pudique & élégant | QalbOfSilk` },
+        {
+          name: "description",
+          content: p.description ?? `${p.name} — Burkini QalbOfSilk, élégant et pudique. Tissu séchage rapide, livraison mondiale.`,
+        },
+        { property: "og:title", content: `${p.name} — QalbOfSilk` },
+        { property: "og:description", content: p.description ?? `${p.name} — Burkini QalbOfSilk` },
+        { property: "og:type", content: "product" },
+        { name: "twitter:title", content: `${p.name} — QalbOfSilk` },
+        { name: "twitter:description", content: p.description ?? `${p.name} — Burkini QalbOfSilk` },
+        ...(p.image_url
+          ? [
+              { property: "og:image", content: p.image_url },
+              { name: "twitter:image", content: p.image_url },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [{ type: "application/ld+json", children: productJsonLd }],
+    };
+  },
   component: ProductPage,
   notFoundComponent: () => (
     <div className="mx-auto max-w-md px-4 py-20 text-center">

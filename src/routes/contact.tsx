@@ -7,10 +7,20 @@ import { InstagramIcon, SnapchatIcon } from "@/components/SocialIcons";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — QalbOfSilk" },
-      { name: "description", content: "Contactez QalbOfSilk pour toute question sur nos burkinis." },
+      { title: "Contact — QalbOfSilk | WhatsApp, Email, Instagram" },
+      {
+        name: "description",
+        content:
+          "Contactez QalbOfSilk : WhatsApp pour une réponse rapide, email, Instagram et Snapchat. Remise en main propre à Bruxelles, expédition mondiale.",
+      },
       { property: "og:title", content: "Contact — QalbOfSilk" },
+      {
+        property: "og:description",
+        content: "Contactez-nous via WhatsApp, email, Instagram ou Snapchat.",
+      },
+      { name: "twitter:title", content: "Contact — QalbOfSilk" },
     ],
+    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/contact" }],
   }),
   component: ContactPage,
 });
