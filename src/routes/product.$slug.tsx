@@ -16,6 +16,7 @@ type Product = {
   slug: string | null;
   sizes: string[];
   active: boolean;
+  compare_at_price_cents: number | null;
 };
 
 export const Route = createFileRoute("/product/$slug")({
@@ -23,12 +24,12 @@ export const Route = createFileRoute("/product/$slug")({
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.slug);
     const query = supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url, slug, sizes, active");
+      .select("id, name, description, price_cents, image_url, slug, sizes, active, compare_at_price_cents" as "*");
     const { data, error } = isUuid
       ? await query.eq("id", params.slug).maybeSingle()
       : await query.eq("slug", params.slug).maybeSingle();
     if (error || !data) throw notFound();
-    return { product: data as Product };
+    return { product: data as unknown as Product };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -130,7 +131,21 @@ function ProductPage() {
               <h1 className="mt-2 font-display text-4xl font-light tracking-wide text-foreground md:text-5xl">
                 {product.name}
               </h1>
-              <p className="mt-3 font-display text-2xl text-foreground">{formatPrice(product.price_cents)}</p>
+              <div className="mt-3 flex items-baseline gap-3">
+                {product.compare_at_price_cents && product.compare_at_price_cents > product.price_cents ? (
+                  <span className="font-display text-xl text-muted-foreground line-through">
+                    {formatPrice(product.compare_at_price_cents)}
+                  </span>
+                ) : null}
+                <span className={`font-display text-2xl ${product.compare_at_price_cents && product.compare_at_price_cents > product.price_cents ? "text-accent" : "text-foreground"}`}>
+                  {formatPrice(product.price_cents)}
+                </span>
+                {product.compare_at_price_cents && product.compare_at_price_cents > product.price_cents ? (
+                  <span className="rounded-sm bg-accent/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-accent">
+                    Promo
+                  </span>
+                ) : null}
+              </div>
 
               <div className="mt-3 flex items-center gap-2 text-sm">
                 {product.active ? (
