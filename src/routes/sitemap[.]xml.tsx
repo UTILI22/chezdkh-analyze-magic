@@ -7,7 +7,8 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const staticUrls = [
+        type SitemapUrl = { loc: string; changefreq: string; priority: string; lastmod?: string };
+        const staticUrls: SitemapUrl[] = [
           { loc: `${SITE}/`, changefreq: "weekly", priority: "1.0" },
           { loc: `${SITE}/burkinis`, changefreq: "weekly", priority: "0.9" },
           { loc: `${SITE}/contact`, changefreq: "monthly", priority: "0.6" },

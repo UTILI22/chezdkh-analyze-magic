@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BurkinisRouteImport } from './routes/burkinis'
@@ -21,6 +22,11 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/burkinis': typeof BurkinisRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/burkinis': typeof BurkinisRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/burkinis': typeof BurkinisRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/burkinis'
     | '/checkout'
     | '/contact'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
     | '/product/$slug'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/burkinis'
     | '/checkout'
     | '/contact'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
     | '/product/$slug'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/burkinis'
     | '/checkout'
     | '/contact'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
     | '/product/$slug'
@@ -163,12 +175,20 @@ export interface RootRouteChildren {
   BurkinisRoute: typeof BurkinisRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProductSlugRoute: typeof ProductSlugRoute
   ThankYouOrderNumberRoute: typeof ThankYouOrderNumberRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -271,6 +291,7 @@ const rootRouteChildren: RootRouteChildren = {
   BurkinisRoute: BurkinisRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProductSlugRoute: ProductSlugRoute,
   ThankYouOrderNumberRoute: ThankYouOrderNumberRoute,
 }
