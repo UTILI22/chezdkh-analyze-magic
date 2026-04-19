@@ -19,6 +19,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ThankYouOrderNumberRouteImport } from './routes/thank-you.$orderNumber'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as ApiOrderEmailsRouteImport } from './routes/api.order-emails'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -77,6 +78,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOrderEmailsRoute = ApiOrderEmailsRouteImport.update({
+  id: '/api/order-emails',
+  path: '/api/order-emails',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/api/order-emails': typeof ApiOrderEmailsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/api/order-emails': typeof ApiOrderEmailsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
+  '/api/order-emails': typeof ApiOrderEmailsRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/thank-you/$orderNumber': typeof ThankYouOrderNumberRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
+    | '/api/order-emails'
     | '/email/unsubscribe'
     | '/product/$slug'
     | '/thank-you/$orderNumber'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
+    | '/api/order-emails'
     | '/email/unsubscribe'
     | '/product/$slug'
     | '/thank-you/$orderNumber'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/login'
     | '/admin/products'
+    | '/api/order-emails'
     | '/email/unsubscribe'
     | '/product/$slug'
     | '/thank-you/$orderNumber'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiOrderEmailsRoute: typeof ApiOrderEmailsRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ProductSlugRoute: typeof ProductSlugRoute
   ThankYouOrderNumberRoute: typeof ThankYouOrderNumberRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/order-emails': {
+      id: '/api/order-emails'
+      path: '/api/order-emails'
+      fullPath: '/api/order-emails'
+      preLoaderRoute: typeof ApiOrderEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/products'
@@ -395,6 +415,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiOrderEmailsRoute: ApiOrderEmailsRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ProductSlugRoute: ProductSlugRoute,
   ThankYouOrderNumberRoute: ThankYouOrderNumberRoute,
@@ -406,3 +427,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
