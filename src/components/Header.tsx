@@ -39,7 +39,7 @@ export function Header() {
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-16 w-auto md:h-32"
+            className="h-16 w-auto md:h-24"
             style={{ filter: "invert(1) hue-rotate(180deg)" }}
           />
         </Link>
@@ -59,7 +59,7 @@ export function Header() {
         </nav>
 
         {/* Right: lang + cart */}
-        <div className="flex items-center gap-2">
+        <div className="relative z-20 ml-auto flex items-center gap-2 bg-background/95 pl-2">
           <div className="hidden md:block">
             <LangSwitcher />
           </div>
