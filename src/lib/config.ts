@@ -13,9 +13,8 @@ export const FREE_SHIPPING_COUNTRY = "Belgique";
 export const SOCIALS = {
   instagram: "https://www.instagram.com/qalb_ofsilk/",
   instagramHandle: "@qalb_ofsilk",
-  // Remplacer par le vrai lien Snap quand fourni
-  snapchat: "https://www.snapchat.com/add/qalbofsilk",
-  snapchatHandle: "qalbofsilk",
+  snapchat: "https://www.snapchat.com/@qalb_ofsilk",
+  snapchatHandle: "@qalb_ofsilk",
   email: "qalbofsilk0@gmail.com",
 };
 
