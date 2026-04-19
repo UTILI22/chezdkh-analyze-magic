@@ -215,20 +215,20 @@ function OrdersList() {
                         })}
                       </td>
                       <td className="p-3">
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex items-center justify-end gap-2">
                           <Link
                             to="/admin/orders/$orderId"
                             params={{ orderId: o.id }}
-                            className="text-accent hover:underline"
+                            className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted"
                           >
-                            Voir
+                            <Eye className="h-3.5 w-3.5" /> Voir
                           </Link>
                           <button
                             onClick={() => setToDelete(o)}
-                            className="text-destructive hover:opacity-80"
+                            className="inline-flex items-center gap-1 rounded-md border border-destructive/40 bg-destructive/5 px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
                             aria-label="Supprimer la commande"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" /> Supprimer
                           </button>
                         </div>
                       </td>
