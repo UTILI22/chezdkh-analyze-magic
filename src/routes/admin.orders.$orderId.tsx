@@ -132,6 +132,27 @@ function OrderDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error: itemsErr } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+    if (itemsErr) {
+      setDeleting(false);
+      toast.error("Erreur lors de la suppression des produits");
+      return;
+    }
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+    setDeleting(false);
+    if (error) {
+      toast.error("Erreur lors de la suppression");
+      return;
+    }
+    toast.success("Commande supprimée");
+    navigate({ to: "/admin" });
+  };
+
   if (loading) return <p className="text-sm text-muted-foreground">Chargement...</p>;
   if (!order) return <p>Commande introuvable.</p>;
 
@@ -147,9 +168,9 @@ function OrderDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 className="font-display text-3xl">Commande {order.order_number}</h2>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3 md:gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl md:text-3xl">Commande {order.order_number}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Passée le{" "}
             {new Date(order.created_at).toLocaleString("fr-BE", {
@@ -161,12 +182,20 @@ function OrderDetailPage() {
             })}
           </p>
         </div>
-        <span
-          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${currentStatus.cls}`}
-        >
-          <span>{currentStatus.emoji}</span>
-          <span>{currentStatus.label}</span>
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${currentStatus.cls}`}
+          >
+            <span>{currentStatus.emoji}</span>
+            <span>{currentStatus.label}</span>
+          </span>
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Supprimer
+          </button>
+        </div>
       </div>
 
       {/* Status switcher */}
