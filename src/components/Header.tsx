@@ -33,13 +33,13 @@ export function Header() {
         {/* Logo: larger than the bar — overflows visually without changing bar height */}
         <Link
           to="/"
-          className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:left-6 md:translate-x-0"
+          className="pointer-events-auto absolute left-16 top-1/2 -translate-y-1/2 md:left-6"
           aria-label={BRAND.name}
         >
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-24 w-auto md:h-32"
+            className="h-16 w-auto md:h-32"
             style={{ filter: "invert(1) hue-rotate(180deg)" }}
           />
         </Link>
