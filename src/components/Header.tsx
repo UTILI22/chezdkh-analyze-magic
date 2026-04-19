@@ -44,13 +44,13 @@ export function Header() {
           />
         </Link>
 
-        {/* Desktop nav (spacer keeps space for the absolute logo on the left) */}
-        <nav className="hidden items-center gap-8 md:flex md:pl-44">
+        {/* Desktop nav — perfectly centered, independent from the logo */}
+        <nav className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 md:flex">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="text-sm font-medium uppercase tracking-wider text-foreground/80 transition-colors hover:text-accent"
+              className="pointer-events-auto text-sm font-medium uppercase tracking-wider text-foreground/80 transition-colors hover:text-accent"
               activeProps={{ className: "text-accent" }}
             >
               {l.label}
