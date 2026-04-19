@@ -316,7 +316,7 @@ function ProductPage() {
               {/* CTA */}
               <button
                 onClick={handleAdd}
-                disabled={!product.active}
+                disabled={!product.active || availableSizes.length === 0 || !availableSizes.includes(size)}
                 className="mt-6 w-full rounded-md bg-foreground py-3.5 text-xs font-medium uppercase tracking-[0.2em] text-background transition-opacity hover:opacity-90 disabled:opacity-40"
               >
                 Ajouter au panier
