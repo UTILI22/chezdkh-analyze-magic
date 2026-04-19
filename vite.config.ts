@@ -6,4 +6,20 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+export default defineConfig({
+  vite: {
+    ssr: {
+      // Pre-bundle these CJS/ESM-mixed email rendering packages so Vite
+      // resolves their internal htmlparser2 import (lib/esm vs dist/esm)
+      // correctly instead of failing at runtime.
+      noExternal: [
+        "@react-email/render",
+        "@react-email/components",
+        "html-to-text",
+        "@selderee/plugin-htmlparser2",
+        "selderee",
+        "htmlparser2",
+      ],
+    },
+  },
+});
