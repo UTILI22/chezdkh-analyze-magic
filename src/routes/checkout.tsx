@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCart, formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
-import { SHIPPING_CENTS, FREE_SHIPPING_COUNTRY, whatsappLink, BRAND } from "@/lib/config";
+import { SHIPPING_CENTS, FREE_SHIPPING_COUNTRY } from "@/lib/config";
 import {
   cleanShortText,
   cleanLongText,
