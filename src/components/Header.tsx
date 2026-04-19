@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LangSwitcher } from "@/components/LangSwitcher";
