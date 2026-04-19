@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-6">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-6">
         {/* Mobile: menu button left */}
         <button
           onClick={() => setMobileOpen(true)}
@@ -30,16 +30,16 @@ export function Header() {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Logo: left on desktop, centered on mobile */}
+        {/* Logo: larger than the bar — overflows visually without changing bar height */}
         <Link
           to="/"
-          className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0"
+          className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:left-6 md:translate-x-0"
           aria-label={BRAND.name}
         >
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-12 w-auto invert md:h-16"
+            className="h-24 w-auto invert md:h-32"
           />
         </Link>
 
