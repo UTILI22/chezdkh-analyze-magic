@@ -14,7 +14,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { loc: `${SITE}/contact`, changefreq: "monthly", priority: "0.6" },
         ];
 
-        let productUrls: { loc: string; changefreq: string; priority: string; lastmod?: string }[] = [];
+        let productUrls: SitemapUrl[] = [];
         try {
           const { data } = await supabase
             .from("products")
