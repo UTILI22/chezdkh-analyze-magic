@@ -104,10 +104,14 @@ export const Route = createFileRoute("/product/$slug")({
   },
 });
 
+const ALL_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addItem, openCart } = useCart();
-  const [size, setSize] = React.useState<string>(product.sizes?.[1] ?? product.sizes?.[0] ?? "M");
+  const availableSizes = product.sizes ?? [];
+  const firstAvailable = availableSizes[1] ?? availableSizes[0] ?? "";
+  const [size, setSize] = React.useState<string>(firstAvailable);
   const [qty, setQty] = React.useState(1);
   const [activeImg, setActiveImg] = React.useState(0);
 
@@ -122,8 +126,8 @@ function ProductPage() {
   }, [product.slug]);
 
   const handleAdd = () => {
-    if (!size) {
-      toast.error("Choisissez une taille");
+    if (!size || !availableSizes.includes(size)) {
+      toast.error("Choisissez une taille disponible");
       return;
     }
     addItem(
@@ -249,19 +253,41 @@ function ProductPage() {
                   <span className="text-[11px] text-muted-foreground">Guide ci-dessous</span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(product.sizes ?? ["S", "M", "L", "XL", "XXL"]).map((s: string) => (
-                    <button
-                      key={s}
-                      onClick={() => setSize(s)}
-                      className={`flex h-11 min-w-11 items-center justify-center rounded-sm border px-3 text-sm font-medium transition-all ${
-                        size === s
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border text-foreground hover:border-foreground"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                  {ALL_SIZES.map((s) => {
+                    const available = availableSizes.includes(s);
+                    const selected = size === s;
+                    if (!available) {
+                      return (
+                        <div
+                          key={s}
+                          aria-disabled="true"
+                          title={`Taille ${s} indisponible`}
+                          className="relative flex h-11 min-w-11 cursor-not-allowed select-none items-center justify-center rounded-sm border border-border bg-muted/30 px-3 text-sm font-medium text-muted-foreground"
+                        >
+                          <span className="line-through opacity-60">{s}</span>
+                          <span
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 flex items-center justify-center text-lg font-bold text-destructive"
+                          >
+                            ✕
+                          </span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        className={`flex h-11 min-w-11 items-center justify-center rounded-sm border px-3 text-sm font-medium transition-all ${
+                          selected
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border text-foreground hover:border-foreground"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -290,7 +316,7 @@ function ProductPage() {
               {/* CTA */}
               <button
                 onClick={handleAdd}
-                disabled={!product.active}
+                disabled={!product.active || availableSizes.length === 0 || !availableSizes.includes(size)}
                 className="mt-6 w-full rounded-md bg-foreground py-3.5 text-xs font-medium uppercase tracking-[0.2em] text-background transition-opacity hover:opacity-90 disabled:opacity-40"
               >
                 Ajouter au panier
