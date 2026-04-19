@@ -84,6 +84,17 @@ function ProductPage() {
   const { addItem, openCart } = useCart();
   const [size, setSize] = React.useState<string>(product.sizes?.[1] ?? product.sizes?.[0] ?? "M");
   const [qty, setQty] = React.useState(1);
+  const [activeImg, setActiveImg] = React.useState(0);
+
+  const images = React.useMemo(() => {
+    return [0, 1]
+      .map((i) => resolveProductImage(product.slug, product.image_url, i))
+      .filter((src): src is string => Boolean(src));
+  }, [product.slug, product.image_url]);
+
+  React.useEffect(() => {
+    setActiveImg(0);
+  }, [product.slug]);
 
   const handleAdd = () => {
     if (!size) {
@@ -115,14 +126,39 @@ function ProductPage() {
           </Link>
 
           <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-            {/* Image */}
-            <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">
-              {(() => {
-                const src = resolveProductImage(product.slug, product.image_url, 0);
-                return src ? (
-                  <img src={src} alt={product.name} className="h-full w-full object-cover" />
-                ) : null;
-              })()}
+            {/* Galerie */}
+            <div className="flex flex-col gap-3">
+              <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">
+                {images[activeImg] ? (
+                  <img
+                    src={images[activeImg]}
+                    alt={`${product.name} — vue ${activeImg + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
+              {images.length > 1 && (
+                <div className="flex gap-3">
+                  {images.map((src, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveImg(i)}
+                      className={`aspect-[3/4] w-20 overflow-hidden rounded-sm border-2 transition-all md:w-24 ${
+                        activeImg === i
+                          ? "border-foreground opacity-100"
+                          : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                      aria-label={`Voir image ${i + 1}`}
+                    >
+                      <img
+                        src={src}
+                        alt={`${product.name} miniature ${i + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}
