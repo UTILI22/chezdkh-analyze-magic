@@ -9,6 +9,7 @@ type Product = {
   price_cents: number;
   image_url: string | null;
   slug?: string | null;
+  compare_at_price_cents?: number | null;
 };
 
 export function ProductGrid({ products }: { products: Product[] }) {
@@ -43,7 +44,16 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </div>
             <div className="mt-3 px-1">
               <h3 className="font-display text-base text-foreground md:text-lg">{p.name}</h3>
-              <p className="mt-0.5 text-sm text-muted-foreground">{formatPrice(p.price_cents)}</p>
+              <p className="mt-0.5 flex items-center gap-2 text-sm">
+                {p.compare_at_price_cents && p.compare_at_price_cents > p.price_cents ? (
+                  <span className="text-muted-foreground line-through">
+                    {formatPrice(p.compare_at_price_cents)}
+                  </span>
+                ) : null}
+                <span className={p.compare_at_price_cents && p.compare_at_price_cents > p.price_cents ? "font-semibold text-accent" : "text-muted-foreground"}>
+                  {formatPrice(p.price_cents)}
+                </span>
+              </p>
               <p className="mt-3 inline-block border-b border-foreground/40 pb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-foreground transition-colors group-hover:border-accent group-hover:text-accent">
                 Voir le produit
               </p>
