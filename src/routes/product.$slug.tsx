@@ -126,8 +126,8 @@ function ProductPage() {
   }, [product.slug]);
 
   const handleAdd = () => {
-    if (!size) {
-      toast.error("Choisissez une taille");
+    if (!size || !availableSizes.includes(size)) {
+      toast.error("Choisissez une taille disponible");
       return;
     }
     addItem(
