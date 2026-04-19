@@ -11,7 +11,7 @@ const dict: Record<Lang, Dict> = {
     "nav.contact": "Contact",
     "announce.text": "REMISE EN MAIN PROPRE SUR BRUXELLES — EXPÉDITION DANS LE MONDE ENTIER",
     "hero.eyebrow": "QalbOfSilk",
-    "hero.title": "L'élégance de la pudeur",
+    "hero.title": "L'élégance & la pudeur",
     "hero.subtitle": "Pièces pensées avec soin, livrées avec amour.",
     "hero.cta": "Découvrir la collection",
     "category.title": "NOS BURKINIS",
