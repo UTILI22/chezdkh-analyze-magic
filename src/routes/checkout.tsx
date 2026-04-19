@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCart, formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,8 +10,20 @@ import {
   phoneSchema,
   detectSpam,
 } from "@/lib/anti-spam";
+import * as React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+
+export const Route = createFileRoute("/checkout")({
+  head: () => ({
+    meta: [
+      { title: "Commande — QalbOfSilk" },
+      { name: "description", content: "Finalisez votre commande QalbOfSilk en toute sécurité." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: CheckoutPage,
+});
 
 const COUNTRIES = [
   "Belgique", "France", "Pays-Bas", "Luxembourg", "Allemagne", "Suisse",
@@ -33,14 +44,10 @@ const schema = z.object({
   pickup: z.boolean(),
 });
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   const { t } = useI18n();
   const { items, subtotalCents, rawSubtotalCents, discountCents, clearCart } = useCart();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    document.title = "Commande — QalbOfSilk";
-  }, []);
 
   const [form, setForm] = React.useState({
     firstName: "", lastName: "", email: "", phone: "",
@@ -48,6 +55,7 @@ export default function CheckoutPage() {
     notes: "", pickup: false,
   });
   const [submitting, setSubmitting] = React.useState(false);
+  // Anti-spam : honeypot (champ caché) + horodatage de chargement du form.
   const [honeypot, setHoneypot] = React.useState("");
   const formStartedAt = React.useRef<number>(Date.now());
 
@@ -75,9 +83,11 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Anti-spam : honeypot rempli ou form soumis trop vite ⇒ on simule un succès silencieux.
     const spam = detectSpam({ honeypot, startedAt: formStartedAt.current });
     if (spam) {
       console.warn("Submission blocked:", spam);
+      // Faux succès pour ne pas révéler la détection au bot
       toast.success(t("checkout.success"));
       return;
     }
@@ -116,6 +126,7 @@ export default function CheckoutPage() {
 
       const order = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
 
+      // WhatsApp recap (s'ouvre dans un nouvel onglet — l'utilisateur ou le commerçant peut envoyer)
       const lines = [
         `🛍️ *Nouvelle commande ${BRAND.name}*`,
         `N° ${order.order_number}`,
@@ -140,12 +151,17 @@ export default function CheckoutPage() {
 
       const waUrl = whatsappLink(lines.join("\n"));
 
+      // Sauvegarde l'URL WhatsApp pour la page de remerciement (au cas où le pop-up est bloqué)
       try { sessionStorage.setItem("qos.lastWa", waUrl); } catch { /* ignore */ }
+      // Tente d'ouvrir WhatsApp automatiquement
       window.open(waUrl, "_blank", "noopener,noreferrer");
 
       clearCart();
       toast.success(t("checkout.success"));
-      navigate(`/thank-you/${order.order_number}`);
+      navigate({
+        to: "/thank-you/$orderNumber",
+        params: { orderNumber: order.order_number },
+      });
     } catch (err: unknown) {
       console.error(err);
       const msg = err instanceof Error ? err.message : "Erreur lors de la commande.";
@@ -164,6 +180,7 @@ export default function CheckoutPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="font-display text-3xl tracking-wide md:text-4xl">{t("checkout.title")}</h1>
 
+          {/* Honeypot anti-spam — caché aux humains, visible aux bots */}
           <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
             <label htmlFor="company_website">Ne pas remplir</label>
             <input

@@ -1,19 +1,32 @@
-import * as React from "react";
-import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import { LogOut, Package, ShoppingBag } from "lucide-react";
 
-export default function AdminLayout() {
+export const Route = createFileRoute("/admin")({
+  head: () => ({
+    meta: [
+      { title: "Admin — QalbOfSilk" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: AdminLayout,
+});
+
+function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const isLoginRoute = location.pathname.startsWith("/admin/login");
   const [checking, setChecking] = React.useState(true);
   const [authed, setAuthed] = React.useState(false);
 
   React.useEffect(() => {
-    document.title = "Admin — QalbOfSilk";
-  }, []);
+    if (isLoginRoute) {
+      setChecking(false);
+      setAuthed(false);
+      return;
+    }
 
-  React.useEffect(() => {
     let mounted = true;
 
     const verify = async (session: { user: { id: string } } | null) => {
@@ -21,7 +34,7 @@ export default function AdminLayout() {
       if (!session) {
         setAuthed(false);
         setChecking(false);
-        navigate("/admin/login");
+        navigate({ to: "/admin/login" });
         return;
       }
       const { data: roles } = await supabase
@@ -34,29 +47,37 @@ export default function AdminLayout() {
         await supabase.auth.signOut();
         setAuthed(false);
         setChecking(false);
-        navigate("/admin/login");
+        navigate({ to: "/admin/login" });
         return;
       }
       setAuthed(true);
       setChecking(false);
     };
 
+    // 1. Set up listener FIRST
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Defer to avoid deadlocks
       setTimeout(() => verify(session), 0);
     });
 
+    // 2. Then check existing session
     supabase.auth.getSession().then(({ data: { session } }) => verify(session));
 
     return () => {
       mounted = false;
       subscription.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, isLoginRoute]);
 
   const logout = async () => {
     await supabase.auth.signOut();
-    navigate("/admin/login");
+    navigate({ to: "/admin/login" });
   };
+
+  // Login route renders standalone (no admin chrome, no auth check)
+  if (isLoginRoute) {
+    return <Outlet />;
+  }
 
   if (checking) {
     return (
@@ -67,9 +88,6 @@ export default function AdminLayout() {
   }
 
   if (!authed) return null;
-
-  const isOrders = location.pathname === "/admin" || location.pathname === "/admin/";
-  const isProducts = location.pathname.startsWith("/admin/products");
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-5 md:px-6 md:py-8">
@@ -87,9 +105,9 @@ export default function AdminLayout() {
       <nav className="mb-6 flex gap-1 overflow-x-auto border-b border-border md:mb-8 md:gap-2">
         <Link
           to="/admin"
-          className={`flex-shrink-0 border-b-2 px-3 py-2 text-sm font-medium hover:text-accent md:px-4 ${
-            isOrders ? "border-accent text-accent" : "border-transparent"
-          }`}
+          activeOptions={{ exact: true }}
+          activeProps={{ className: "border-accent text-accent" }}
+          className="flex-shrink-0 border-b-2 border-transparent px-3 py-2 text-sm font-medium hover:text-accent md:px-4"
         >
           <span className="inline-flex items-center gap-2">
             <ShoppingBag className="h-4 w-4" /> Commandes
@@ -97,9 +115,8 @@ export default function AdminLayout() {
         </Link>
         <Link
           to="/admin/products"
-          className={`flex-shrink-0 border-b-2 px-3 py-2 text-sm font-medium hover:text-accent md:px-4 ${
-            isProducts ? "border-accent text-accent" : "border-transparent"
-          }`}
+          activeProps={{ className: "border-accent text-accent" }}
+          className="flex-shrink-0 border-b-2 border-transparent px-3 py-2 text-sm font-medium hover:text-accent md:px-4"
         >
           <span className="inline-flex items-center gap-2">
             <Package className="h-4 w-4" /> Produits

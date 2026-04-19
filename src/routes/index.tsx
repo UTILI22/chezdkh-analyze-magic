@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Link } from "react-router-dom";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { ProductGrid } from "@/components/ProductGrid";
 import { TrustBar } from "@/components/TrustBar";
@@ -16,37 +15,51 @@ type Product = {
   compare_at_price_cents: number | null;
 };
 
-export default function IndexPage() {
-  const { t } = useI18n();
-  const [products, setProducts] = React.useState<Product[]>([]);
-
-  React.useEffect(() => {
-    document.title = "QalbOfSilk — Burkinis élégants & pudiques | Bruxelles & livraison mondiale";
-  }, []);
-
-  React.useEffect(() => {
-    let active = true;
-    supabase
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "QalbOfSilk — Burkinis élégants & pudiques | Bruxelles & livraison mondiale" },
+      {
+        name: "description",
+        content:
+          "Découvrez QalbOfSilk : burkinis pudiques au tissu séchage rapide, coupe élégante et confortable. Pack 2 = 70€, 3 = 100€. Remise en main propre à Bruxelles, expédition mondiale.",
+      },
+      { property: "og:title", content: "QalbOfSilk — Burkinis élégants & pudiques" },
+      {
+        property: "og:description",
+        content:
+          "Burkinis pudiques, élégants et confortables. Pack 2 = 70€, 3 = 100€. Bruxelles & livraison mondiale.",
+      },
+      { name: "twitter:title", content: "QalbOfSilk — Burkinis élégants & pudiques" },
+      {
+        name: "twitter:description",
+        content: "Burkinis pudiques. Pack 2 = 70€, 3 = 100€. Bruxelles & monde.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/" }],
+  }),
+  loader: async (): Promise<{ products: Product[] }> => {
+    const { data, error } = await supabase
       .from("products")
-      .select("id, name, description, price_cents, image_url, slug, compare_at_price_cents")
+      .select("id, name, description, price_cents, image_url, slug, compare_at_price_cents" as "*")
       .eq("active", true)
-      .order("position", { ascending: true })
-      .then(({ data, error }) => {
-        if (!active) return;
-        if (error) {
-          console.error(error);
-          setProducts([]);
-          return;
-        }
-        setProducts((data ?? []) as unknown as Product[]);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+      .order("position", { ascending: true });
+    if (error) {
+      console.error(error);
+      return { products: [] };
+    }
+    return { products: (data ?? []) as unknown as Product[] };
+  },
+  component: Index,
+});
+
+function Index() {
+  const { t } = useI18n();
+  const { products } = Route.useLoaderData();
 
   return (
     <div>
+      {/* Hero (texte uniquement, image retirée) */}
       <section className="bg-background px-4 py-10 md:py-16">
         <div className="mx-auto max-w-5xl text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-accent">
@@ -68,10 +81,12 @@ export default function IndexPage() {
         </div>
       </section>
 
+      {/* Offre exclusive — remontée juste sous le hero */}
       <PriceTiers />
 
       <TrustBar />
 
+      {/* Category title under hero */}
       <section className="border-b border-border bg-cream px-4 py-12 md:py-16">
         <div className="mx-auto max-w-5xl text-center">
           <h2 className="font-display text-3xl font-light tracking-[0.15em] text-foreground md:text-4xl">
@@ -83,11 +98,13 @@ export default function IndexPage() {
         </div>
       </section>
 
+      {/* Products preview */}
       <section className="px-4 py-12 md:py-16">
         <div className="mx-auto max-w-7xl">
           <ProductGrid products={products} />
         </div>
       </section>
+
     </div>
   );
 }

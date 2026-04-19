@@ -1,5 +1,6 @@
-import * as React from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
@@ -18,7 +19,11 @@ type Product = {
   sizes: string[];
 };
 
-export default function AdminProducts() {
+export const Route = createFileRoute("/admin/products")({
+  component: ProductsAdmin,
+});
+
+function ProductsAdmin() {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -49,7 +54,7 @@ export default function AdminProducts() {
     <div>
       <h2 className="mb-4 font-display text-2xl">Produits ({products.length})</h2>
       <p className="mb-6 text-sm text-muted-foreground">
-        Modifie le nom, le prix, l'URL d'image et le statut.
+        Modifie le nom, le prix, l'URL d'image et le statut. (L'upload d'image arrivera quand tu enverras les photos.)
       </p>
       <div className="space-y-3">
         {products.map((p) => (
@@ -164,7 +169,7 @@ function ProductRow({
           })}
         </div>
         <p className="mt-2 text-[11px] text-muted-foreground">
-          Clique pour activer/désactiver. N'oublie pas de cliquer sur <strong>Sauver</strong>.
+          Clique pour activer/désactiver. Les tailles désactivées seront barrées (✕ rouge) et non sélectionnables sur la page produit. N'oublie pas de cliquer sur <strong>Sauver</strong>.
         </p>
       </div>
     </div>

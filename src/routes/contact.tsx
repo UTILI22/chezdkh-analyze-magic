@@ -1,16 +1,32 @@
-import * as React from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { whatsappLink, SOCIALS } from "@/lib/config";
 import { Mail, MessageCircle, MapPin } from "lucide-react";
 import { InstagramIcon, SnapchatIcon } from "@/components/SocialIcons";
 
-export default function ContactPage() {
+export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: "Contact — QalbOfSilk | WhatsApp, Email, Instagram" },
+      {
+        name: "description",
+        content:
+          "Contactez QalbOfSilk : WhatsApp pour une réponse rapide, email, Instagram et Snapchat. Remise en main propre à Bruxelles, expédition mondiale.",
+      },
+      { property: "og:title", content: "Contact — QalbOfSilk" },
+      {
+        property: "og:description",
+        content: "Contactez-nous via WhatsApp, email, Instagram ou Snapchat.",
+      },
+      { name: "twitter:title", content: "Contact — QalbOfSilk" },
+    ],
+    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/contact" }],
+  }),
+  component: ContactPage,
+});
+
+function ContactPage() {
   const { t } = useI18n();
-
-  React.useEffect(() => {
-    document.title = "Contact — QalbOfSilk | WhatsApp, Email, Instagram";
-  }, []);
-
   return (
     <div className="px-4 py-12 md:py-20">
       <div className="mx-auto max-w-3xl text-center">

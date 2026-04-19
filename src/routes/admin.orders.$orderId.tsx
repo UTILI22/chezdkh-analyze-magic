@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
 import { toast } from "sonner";
@@ -60,6 +60,11 @@ const STATUS_OPTIONS: { key: StatusKey; label: string; emoji: string; cls: strin
   { key: "cancelled", label: "Annulée", emoji: "✖️", cls: "bg-red-100 text-red-900 border-red-300" },
 ];
 
+export const Route = createFileRoute("/admin/orders/$orderId")({
+  component: OrderDetailPage,
+});
+
+/** Extracts size from a product line id like "<uuid>__M" */
 function extractSizeFromId(id: string | null): string | null {
   if (!id) return null;
   const idx = id.indexOf("__");
@@ -67,8 +72,8 @@ function extractSizeFromId(id: string | null): string | null {
   return id.slice(idx + 2);
 }
 
-export default function AdminOrderDetail() {
-  const { orderId = "" } = useParams<{ orderId: string }>();
+function OrderDetailPage() {
+  const { orderId } = Route.useParams();
   const navigate = useNavigate();
   const [order, setOrder] = React.useState<OrderDetail | null>(null);
   const [items, setItems] = React.useState<Item[]>([]);
@@ -91,6 +96,7 @@ export default function AdminOrderDetail() {
     const itemList = (i ?? []) as Item[];
     setItems(itemList);
 
+    // Fetch product images / slugs in batch
     const productIds = Array.from(
       new Set(itemList.map((it) => it.product_id).filter((x): x is string => Boolean(x))),
     );
@@ -144,7 +150,7 @@ export default function AdminOrderDetail() {
       return;
     }
     toast.success("Commande supprimée");
-    navigate("/admin");
+    navigate({ to: "/admin" });
   };
 
   if (loading) return <p className="text-sm text-muted-foreground">Chargement...</p>;
@@ -161,6 +167,7 @@ export default function AdminOrderDetail() {
         <ArrowLeft className="h-4 w-4" /> Retour aux commandes
       </Link>
 
+      {/* Header */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3 md:gap-4">
         <div className="min-w-0">
           <h2 className="font-display text-2xl md:text-3xl">Commande {order.order_number}</h2>
@@ -191,6 +198,7 @@ export default function AdminOrderDetail() {
         </div>
       </div>
 
+      {/* Status switcher */}
       <div className="mb-8 rounded-md border border-border bg-muted/20 p-4">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Modifier le statut
@@ -218,6 +226,7 @@ export default function AdminOrderDetail() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Customer */}
         <div className="rounded-md border border-border p-5">
           <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">Client</h3>
           <div className="space-y-2 text-sm">
@@ -239,8 +248,11 @@ export default function AdminOrderDetail() {
           </div>
         </div>
 
+        {/* Address / pickup */}
         <div className="rounded-md border border-border p-5">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">Livraison</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
+            Livraison
+          </h3>
           {order.pickup_brussels ? (
             <p className="rounded bg-accent/10 p-3 text-sm font-medium">
               🤝 Remise en main propre — Bruxelles
@@ -260,6 +272,7 @@ export default function AdminOrderDetail() {
         </div>
       </div>
 
+      {/* Items with photos + sizes */}
       <div className="mt-6 rounded-md border border-border p-5">
         <h3 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
           <PackageIcon className="h-4 w-4" />
@@ -320,6 +333,7 @@ export default function AdminOrderDetail() {
         </div>
       </div>
 
+      {/* Customer message */}
       {order.notes && (
         <div className="mt-6 rounded-md border border-accent/30 bg-accent/5 p-5">
           <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">

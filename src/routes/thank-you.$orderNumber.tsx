@@ -1,6 +1,16 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
 import * as React from "react";
-import { Link, useParams } from "react-router-dom";
 import { Sparkles, MessageCircle, Home } from "lucide-react";
+
+export const Route = createFileRoute("/thank-you/$orderNumber")({
+  head: () => ({
+    meta: [
+      { title: "Merci pour votre commande — QalbOfSilk" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
+  component: ThankYouPage,
+});
 
 type Particle = {
   id: number;
@@ -56,12 +66,11 @@ function Fireworks() {
   );
 }
 
-export default function ThankYouPage() {
-  const { orderNumber = "" } = useParams<{ orderNumber: string }>();
+function ThankYouPage() {
+  const { orderNumber } = Route.useParams();
   const [waUrl, setWaUrl] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    document.title = "Merci pour votre commande — QalbOfSilk";
     try {
       const url = sessionStorage.getItem("qos.lastWa");
       if (url) setWaUrl(url);

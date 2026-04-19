@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Link } from "react-router-dom";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import { formatPrice } from "@/lib/cart";
 import { Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -27,7 +27,11 @@ type Order = {
   pickup_brussels: boolean;
 };
 
-export default function AdminOrders() {
+export const Route = createFileRoute("/admin/")({
+  component: OrdersList,
+});
+
+function OrdersList() {
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [toDelete, setToDelete] = React.useState<Order | null>(null);
@@ -65,6 +69,7 @@ export default function AdminOrders() {
   const confirmDelete = async () => {
     if (!toDelete) return;
     setDeleting(true);
+    // Supprime d'abord les lignes (au cas où la cascade FK n'est pas configurée)
     const { error: itemsErr } = await supabase
       .from("order_items")
       .delete()
@@ -97,26 +102,38 @@ export default function AdminOrders() {
         <p className="text-sm text-muted-foreground">Aucune commande pour le moment.</p>
       ) : (
         <>
+          {/* Mobile: cards */}
           <ul className="space-y-3 md:hidden">
             {orders.map((o) => {
               const info = statusInfo(o.status);
               return (
-                <li key={o.id} className="rounded-lg border border-border bg-card p-4 shadow-sm">
+                <li
+                  key={o.id}
+                  className="rounded-lg border border-border bg-card p-4 shadow-sm"
+                >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-mono text-[11px] text-muted-foreground">{o.order_number}</p>
+                      <p className="font-mono text-[11px] text-muted-foreground">
+                        {o.order_number}
+                      </p>
                       <p className="mt-0.5 truncate font-medium">
                         {o.customer_first_name} {o.customer_last_name}
                       </p>
                     </div>
-                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${info.cls}`}>
+                    <span
+                      className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${info.cls}`}
+                    >
                       {info.label}
                     </span>
                   </div>
 
                   <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{o.pickup_brussels ? "🤝 Main propre" : `📦 ${o.country}`}</span>
-                    <span className="font-semibold text-foreground">{formatPrice(o.total_cents)}</span>
+                    <span>
+                      {o.pickup_brussels ? "🤝 Main propre" : `📦 ${o.country}`}
+                    </span>
+                    <span className="font-semibold text-foreground">
+                      {formatPrice(o.total_cents)}
+                    </span>
                   </div>
 
                   <p className="mt-2 text-[11px] text-muted-foreground">
@@ -131,7 +148,8 @@ export default function AdminOrders() {
 
                   <div className="mt-3 flex gap-2">
                     <Link
-                      to={`/admin/orders/${o.id}`}
+                      to="/admin/orders/$orderId"
+                      params={{ orderId: o.id }}
                       className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-medium hover:bg-muted"
                     >
                       <Eye className="h-3.5 w-3.5" /> Voir
@@ -149,6 +167,7 @@ export default function AdminOrders() {
             })}
           </ul>
 
+          {/* Desktop: table */}
           <div className="hidden overflow-x-auto rounded-md border border-border md:block">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
@@ -176,9 +195,13 @@ export default function AdminOrders() {
                       <td className="p-3 text-xs">
                         {o.pickup_brussels ? "🤝 Main propre" : "📦 Expédition"}
                       </td>
-                      <td className="p-3 text-right font-medium">{formatPrice(o.total_cents)}</td>
+                      <td className="p-3 text-right font-medium">
+                        {formatPrice(o.total_cents)}
+                      </td>
                       <td className="p-3">
-                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${info.cls}`}>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${info.cls}`}
+                        >
                           {info.label}
                         </span>
                       </td>
@@ -194,7 +217,8 @@ export default function AdminOrders() {
                       <td className="p-3">
                         <div className="flex items-center justify-end gap-2">
                           <Link
-                            to={`/admin/orders/${o.id}`}
+                            to="/admin/orders/$orderId"
+                            params={{ orderId: o.id }}
                             className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted"
                           >
                             <Eye className="h-3.5 w-3.5" /> Voir

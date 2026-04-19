@@ -1,9 +1,14 @@
-import * as React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import { toast } from "sonner";
 
-export default function AdminLogin() {
+export const Route = createFileRoute("/admin/login")({
+  head: () => ({ meta: [{ title: "Admin — QalbOfSilk" }] }),
+  component: AdminLogin,
+});
+
+function AdminLogin() {
   const navigate = useNavigate();
   const [mode, setMode] = React.useState<"login" | "signup">("login");
   const [adminExists, setAdminExists] = React.useState<boolean | null>(null);
@@ -12,14 +17,16 @@ export default function AdminLogin() {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    document.title = "Admin — QalbOfSilk";
+    // Check if any admin exists already
     supabase.rpc("admin_exists").then(({ data }) => {
       const exists = Boolean(data);
       setAdminExists(exists);
       if (!exists) setMode("signup");
     });
+
+    // Already logged in?
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/admin");
+      if (session) navigate({ to: "/admin" });
     });
   }, [navigate]);
 
@@ -44,7 +51,7 @@ export default function AdminLogin() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("/admin");
+        navigate({ to: "/admin" });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Erreur inconnue";
@@ -81,7 +88,9 @@ export default function AdminLogin() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">Mot de passe</label>
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider">
+              Mot de passe
+            </label>
             <input
               required
               type="password"
