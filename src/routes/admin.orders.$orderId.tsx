@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import * as React from "react";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, Phone, MapPin, Package as PackageIcon, MessageSquare } from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, Package as PackageIcon, MessageSquare, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type OrderDetail = {
   id: string;
