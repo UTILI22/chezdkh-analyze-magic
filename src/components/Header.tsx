@@ -44,8 +44,8 @@ export function Header() {
           />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
+        {/* Desktop nav (spacer keeps space for the absolute logo on the left) */}
+        <nav className="hidden items-center gap-8 md:flex md:pl-44">
           {links.map((l) => (
             <Link
               key={l.to}
