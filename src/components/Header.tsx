@@ -78,31 +78,51 @@ export function Header() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-background p-6 shadow-xl">
-            <div className="mb-8 flex items-center justify-between">
-              <span className="font-display text-xl">{BRAND.name}</span>
-              <button onClick={() => setMobileOpen(false)} aria-label="Fermer">
+          <div className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-background shadow-2xl">
+            {/* Drawer header */}
+            <div className="flex items-center justify-between border-b border-border px-6 py-5">
+              <Link to="/" onClick={() => setMobileOpen(false)} aria-label={BRAND.name}>
+                <img
+                  src={logo}
+                  alt={BRAND.name}
+                  className="h-12 w-auto"
+                  style={{ filter: "invert(1) hue-rotate(180deg)" }}
+                />
+              </Link>
+              <button
+                onClick={() => setMobileOpen(false)}
+                aria-label="Fermer"
+                className="rounded-md p-2 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex flex-col gap-4">
+
+            {/* Drawer nav */}
+            <nav className="flex flex-1 flex-col px-2 py-4">
               {links.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
                   onClick={() => setMobileOpen(false)}
-                  className="border-b border-border py-2 text-sm font-medium uppercase tracking-wider"
+                  className="rounded-md px-4 py-3 text-sm font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-muted hover:text-accent"
+                  activeProps={{ className: "bg-muted text-accent" }}
                 >
                   {l.label}
                 </Link>
               ))}
             </nav>
-            <div className="mt-8">
+
+            {/* Drawer footer */}
+            <div className="border-t border-border px-6 py-5">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Langue
+              </p>
               <LangSwitcher />
             </div>
           </div>
