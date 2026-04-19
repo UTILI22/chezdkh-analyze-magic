@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import * as React from "react";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/cart";
+import { resolveProductImage } from "@/lib/product-images";
 
 type Product = {
   id: string;
@@ -12,6 +13,7 @@ type Product = {
   image_url: string | null;
   position: number;
   active: boolean;
+  slug: string | null;
 };
 
 export const Route = createFileRoute("/admin/products")({
@@ -78,9 +80,12 @@ function ProductRow({
   return (
     <div className="grid gap-3 rounded-md border border-border bg-card p-4 md:grid-cols-[80px_1fr_1fr_120px_120px_auto]">
       <div className="aspect-square w-20 overflow-hidden rounded bg-foreground">
-        {draft.image_url && (
-          <img src={draft.image_url} alt={draft.name} className="h-full w-full object-cover" />
-        )}
+        {(() => {
+          const src = resolveProductImage(draft.slug, draft.image_url, 0);
+          return src ? (
+            <img src={src} alt={draft.name} className="h-full w-full object-cover" />
+          ) : null;
+        })()}
       </div>
       <input
         className="rounded-md border border-input px-2 py-1 text-sm"
