@@ -26,13 +26,13 @@ export function SplashIntro() {
         // ignore
       }
     }, 3000);
-    // Bloque le scroll pendant l'intro
-    const prevOverflow = document.body.style.overflow;
+    // Bloque le scroll pendant l'intro — on restaure à vide pour ne jamais
+    // figer la page si un autre composant a touché overflow entre-temps.
     document.body.style.overflow = "hidden";
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(endTimer);
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = "";
     };
   }, []);
 
