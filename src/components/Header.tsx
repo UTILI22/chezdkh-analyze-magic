@@ -85,7 +85,7 @@ export function Header() {
           />
           <div
             className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col shadow-2xl"
-            style={{ backgroundColor: "oklch(0.985 0.005 85)" }}
+            style={{ backgroundColor: "#f5f1ea", backgroundImage: "none" }}
           >
             {/* Drawer header */}
             <div className="flex items-center justify-between border-b border-border px-6 py-5">
