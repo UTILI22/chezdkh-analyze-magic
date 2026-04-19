@@ -1,7 +1,7 @@
 // Central place to configure brand & contact info.
 export const BRAND = {
   name: "QalbOfSilk",
-  tagline: "L'élégance de la pudeur",
+  tagline: "L'élégance & la pudeur",
 };
 
 // Format international, sans + ni espaces. Mettre le vrai numéro plus tard.
