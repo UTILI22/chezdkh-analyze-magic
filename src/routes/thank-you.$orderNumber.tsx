@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import * as React from "react";
-import { Sparkles, MessageCircle, Home } from "lucide-react";
+import { Sparkles, Home, Instagram } from "lucide-react";
+import { SOCIALS, WHATSAPP_NUMBER, whatsappLink } from "@/lib/config";
 
 export const Route = createFileRoute("/thank-you/$orderNumber")({
   head: () => ({
