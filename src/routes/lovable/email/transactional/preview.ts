@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { render } from '@react-email/components'
 import { createFileRoute } from '@tanstack/react-router'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
@@ -26,6 +25,7 @@ export const Route = createFileRoute("/lovable/email/transactional/preview")({
         }
 
         const templateNames = Object.keys(TEMPLATES)
+        const { render } = await import('@react-email/components')
         const results: Array<{
           templateName: string
           displayName: string

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { render } from '@react-email/components'
 import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { TEMPLATES } from '@/lib/email-templates/registry'
@@ -256,6 +255,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
 
         // 4. Render React Email template to HTML and plain text
         const element = React.createElement(template.component, templateData)
+        const { render } = await import('@react-email/components')
         const html = await render(element)
         const plainText = await render(element, { plainText: true })
 
