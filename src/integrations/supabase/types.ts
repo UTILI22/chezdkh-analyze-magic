@@ -125,6 +125,7 @@ export type Database = {
       products: {
         Row: {
           active: boolean
+          compare_at_price_cents: number | null
           created_at: string
           description: string | null
           id: string
@@ -138,6 +139,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          compare_at_price_cents?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -151,6 +153,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          compare_at_price_cents?: number | null
           created_at?: string
           description?: string | null
           id?: string
