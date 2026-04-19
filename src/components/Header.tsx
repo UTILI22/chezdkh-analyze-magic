@@ -39,7 +39,7 @@ export function Header() {
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-12 w-auto mix-blend-multiply md:h-16"
+            className="h-12 w-auto invert md:h-16"
           />
         </Link>
 

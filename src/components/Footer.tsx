@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { BRAND, SOCIALS } from "@/lib/config";
 import { SocialRow } from "@/components/SocialIcons";
+import logo from "@/assets/logo.png";
 
 export function Footer() {
   const { t } = useI18n();
@@ -10,7 +11,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-2xl tracking-wider">{BRAND.name}</h3>
+            <img src={logo} alt={BRAND.name} className="h-16 w-auto" />
             <p className="mt-2 text-sm text-background/70">{BRAND.tagline}</p>
             <div className="mt-4">
               <SocialRow className="text-background" iconClassName="h-4 w-4" />
