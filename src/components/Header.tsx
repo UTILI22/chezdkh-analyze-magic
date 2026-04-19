@@ -33,13 +33,13 @@ export function Header() {
         {/* Logo: larger than the bar — overflows visually without changing bar height */}
         <Link
           to="/"
-          className="pointer-events-auto absolute left-16 top-1/2 -translate-y-1/2 md:left-6"
+          className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:left-6 md:translate-x-0"
           aria-label={BRAND.name}
         >
           <img
             src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
-            className="h-16 w-auto md:h-24"
+            className="h-20 w-auto md:h-24"
             style={{ filter: "invert(1) hue-rotate(180deg)" }}
           />
         </Link>
@@ -60,9 +60,7 @@ export function Header() {
 
         {/* Right: lang + cart */}
         <div className="relative z-20 ml-auto flex items-center gap-2 bg-background/95 pl-2">
-          <div className="hidden md:block">
-            <LangSwitcher />
-          </div>
+          <LangSwitcher />
           <button
             onClick={openCart}
             className="relative rounded-md p-2 text-foreground transition-colors hover:text-accent"
