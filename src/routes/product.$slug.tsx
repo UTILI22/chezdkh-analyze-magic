@@ -104,10 +104,14 @@ export const Route = createFileRoute("/product/$slug")({
   },
 });
 
+const ALL_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const { addItem, openCart } = useCart();
-  const [size, setSize] = React.useState<string>(product.sizes?.[1] ?? product.sizes?.[0] ?? "M");
+  const availableSizes = product.sizes ?? [];
+  const firstAvailable = availableSizes[1] ?? availableSizes[0] ?? "";
+  const [size, setSize] = React.useState<string>(firstAvailable);
   const [qty, setQty] = React.useState(1);
   const [activeImg, setActiveImg] = React.useState(0);
 
