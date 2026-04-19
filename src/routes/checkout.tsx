@@ -180,6 +180,20 @@ function CheckoutPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="font-display text-3xl tracking-wide md:text-4xl">{t("checkout.title")}</h1>
 
+          {/* Honeypot anti-spam — caché aux humains, visible aux bots */}
+          <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
+            <label htmlFor="company_website">Ne pas remplir</label>
+            <input
+              type="text"
+              id="company_website"
+              name="company_website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wider">{t("checkout.firstName")}</label>
