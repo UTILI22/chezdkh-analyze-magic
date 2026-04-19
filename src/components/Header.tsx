@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LangSwitcher } from "@/components/LangSwitcher";
@@ -77,60 +78,63 @@ export function Header() {
       </div>
 
       {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-[60] md:hidden">
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div
-            className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col shadow-2xl"
-            style={{ backgroundColor: "oklch(0.985 0.005 85)" }}
-          >
-            {/* Drawer header */}
-            <div className="flex items-center justify-between border-b border-border px-6 py-5">
-              <Link to="/" onClick={() => setMobileOpen(false)} aria-label={BRAND.name}>
-                <img
-                  src={logo}
-                  alt={BRAND.name}
-                  className="h-12 w-auto"
-                  style={{ filter: "invert(1) hue-rotate(180deg)" }}
-                />
-              </Link>
-              <button
-                onClick={() => setMobileOpen(false)}
-                aria-label="Fermer"
-                className="rounded-md p-2 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Drawer nav */}
-            <nav className="flex flex-1 flex-col px-2 py-4">
-              {links.map((l) => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-md px-4 py-3 text-sm font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-muted hover:text-accent"
-                  activeProps={{ className: "bg-muted text-accent" }}
-                >
-                  {l.label}
+      {mobileOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-[100] md:hidden">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setMobileOpen(false)}
+            />
+            <div
+              className="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col shadow-2xl"
+              style={{ backgroundColor: "#f5f1ea" }}
+            >
+              {/* Drawer header */}
+              <div className="flex items-center justify-between border-b border-border px-6 py-5">
+                <Link to="/" onClick={() => setMobileOpen(false)} aria-label={BRAND.name}>
+                  <img
+                    src={logo}
+                    alt={BRAND.name}
+                    className="h-12 w-auto"
+                    style={{ filter: "invert(1) hue-rotate(180deg)" }}
+                  />
                 </Link>
-              ))}
-            </nav>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Fermer"
+                  className="rounded-md p-2 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-            {/* Drawer footer */}
-            <div className="border-t border-border px-6 py-5">
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Langue
-              </p>
-              <LangSwitcher />
+              {/* Drawer nav */}
+              <nav className="flex flex-1 flex-col px-2 py-4">
+                {links.map((l) => (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-md px-4 py-3 text-sm font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-muted hover:text-accent"
+                    activeProps={{ className: "bg-muted text-accent" }}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Drawer footer */}
+              <div className="border-t border-border px-6 py-5">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  Langue
+                </p>
+                <LangSwitcher />
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </header>
   );
 }
