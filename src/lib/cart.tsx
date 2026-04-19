@@ -15,8 +15,9 @@ type CartCtx = {
   openCart: () => void;
   closeCart: () => void;
   addItem: (item: Omit<CartItem, "quantity">, qty?: number) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, qty: number) => void;
+  /** key = `${item.id}__${item.size ?? ""}` */
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, qty: number) => void;
   clearCart: () => void;
   /** Total brut (somme des prix unitaires × quantité) — sert au comparatif */
   rawSubtotalCents: number;
@@ -76,10 +77,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsOpen(true);
   };
 
-  const removeItem = (id: string) => setItems((p) => p.filter((i) => i.id !== id));
-  const updateQuantity = (id: string, qty: number) => {
-    if (qty <= 0) return removeItem(id);
-    setItems((p) => p.map((i) => (i.id === id ? { ...i, quantity: qty } : i)));
+  // Clé d'une ligne = `${item.id}__${item.size ?? ""}` — permet de gérer
+  // plusieurs lignes du même produit en tailles différentes sans interférence.
+  const matchKey = (i: CartItem, key: string) => `${i.id}__${i.size ?? ""}` === key;
+  const removeItem = (key: string) => setItems((p) => p.filter((i) => !matchKey(i, key)));
+  const updateQuantity = (key: string, qty: number) => {
+    if (qty <= 0) return removeItem(key);
+    setItems((p) => p.map((i) => (matchKey(i, key) ? { ...i, quantity: qty } : i)));
   };
   const clearCart = () => setItems([]);
 

@@ -107,8 +107,12 @@ export function CartDrawer() {
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
               <ul className="divide-y divide-border">
-                {items.map((item) => (
-                  <li key={item.id + (item.size ?? "")} className="flex gap-3 py-4">
+                {items.map((item) => {
+                  // Clé unique de ligne (produit + taille) — évite que supprimer
+                  // un S supprime aussi le M du même produit.
+                  const lineKey = `${item.id}__${item.size ?? ""}`;
+                  return (
+                  <li key={lineKey} className="flex gap-3 py-4">
                     <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-foreground">
                       {item.imageUrl ? (
                         <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
@@ -117,7 +121,7 @@ export function CartDrawer() {
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between gap-2">
                         <h3 className="text-sm font-medium leading-tight">{item.name}</h3>
-                        <button onClick={() => removeItem(item.id)} aria-label="Supprimer">
+                        <button onClick={() => removeItem(lineKey)} aria-label="Supprimer">
                           <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </button>
                       </div>
@@ -129,7 +133,7 @@ export function CartDrawer() {
                       <p className="mt-0.5 text-xs text-muted-foreground">{formatPrice(item.priceCents)}</p>
                       <div className="mt-auto flex items-center gap-2">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(lineKey, item.quantity - 1)}
                           className="rounded border border-border p-1 hover:bg-muted"
                           aria-label="Diminuer"
                         >
@@ -137,7 +141,7 @@ export function CartDrawer() {
                         </button>
                         <span className="w-6 text-center text-sm">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(lineKey, item.quantity + 1)}
                           className="rounded border border-border p-1 hover:bg-muted"
                           aria-label="Augmenter"
                         >
@@ -146,7 +150,8 @@ export function CartDrawer() {
                       </div>
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
 
               {nextStep && (
