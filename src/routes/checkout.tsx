@@ -55,6 +55,9 @@ function CheckoutPage() {
     notes: "", pickup: false,
   });
   const [submitting, setSubmitting] = React.useState(false);
+  // Anti-spam : honeypot (champ caché) + horodatage de chargement du form.
+  const [honeypot, setHoneypot] = React.useState("");
+  const formStartedAt = React.useRef<number>(Date.now());
 
   const isBelgium = form.country === FREE_SHIPPING_COUNTRY;
   const shipping = isBelgium ? 0 : SHIPPING_CENTS;
