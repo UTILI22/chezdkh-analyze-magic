@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
 
+const ALL_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+
 type Product = {
   id: string;
   name: string;
@@ -14,6 +16,7 @@ type Product = {
   position: number;
   active: boolean;
   slug: string | null;
+  sizes: string[];
 };
 
 export const Route = createFileRoute("/admin/products")({
