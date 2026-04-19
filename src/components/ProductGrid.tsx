@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { formatPrice } from "@/lib/cart";
 import { resolveProductImage } from "@/lib/product-images";
 
@@ -29,8 +29,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
         return (
           <Link
             key={p.id}
-            to="/product/$slug"
-            params={{ slug }}
+            to={`/product/${slug}`}
             className="group block"
           >
             <div className="aspect-[3/4] overflow-hidden rounded-sm bg-foreground">

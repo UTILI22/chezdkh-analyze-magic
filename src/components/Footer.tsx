@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { BRAND, SOCIALS } from "@/lib/config";
 import { SocialRow } from "@/components/SocialIcons";

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import * as React from "react";
 import { createPortal } from "react-dom";
@@ -12,12 +12,16 @@ export function Header() {
   const { t } = useI18n();
   const { itemCount, openCart } = useCart();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const location = useLocation();
 
   const links = [
     { to: "/", label: t("nav.home") },
     { to: "/burkinis", label: t("nav.burkinis") },
     { to: "/contact", label: t("nav.contact") },
   ];
+
+  const isActive = (to: string) =>
+    to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -51,8 +55,9 @@ export function Header() {
             <Link
               key={l.to}
               to={l.to}
-              className="pointer-events-auto text-sm font-medium uppercase tracking-wider text-foreground/80 transition-colors hover:text-accent"
-              activeProps={{ className: "text-accent" }}
+              className={`pointer-events-auto text-sm font-medium uppercase tracking-wider transition-colors hover:text-accent ${
+                isActive(l.to) ? "text-accent" : "text-foreground/80"
+              }`}
             >
               {l.label}
             </Link>
@@ -116,8 +121,9 @@ export function Header() {
                     key={l.to}
                     to={l.to}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-md px-4 py-3 text-sm font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:bg-muted hover:text-accent"
-                    activeProps={{ className: "bg-muted text-accent" }}
+                    className={`rounded-md px-4 py-3 text-sm font-medium uppercase tracking-[0.18em] transition-colors hover:bg-muted hover:text-accent ${
+                      isActive(l.to) ? "bg-muted text-accent" : "text-foreground"
+                    }`}
                   >
                     {l.label}
                   </Link>
