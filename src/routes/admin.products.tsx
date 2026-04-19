@@ -78,7 +78,8 @@ function ProductRow({
     draft.description !== product.description ||
     draft.price_cents !== product.price_cents ||
     draft.image_url !== product.image_url ||
-    draft.active !== product.active;
+    draft.active !== product.active ||
+    JSON.stringify(draft.sizes ?? []) !== JSON.stringify(product.sizes ?? []);
 
   return (
     <div className="grid gap-3 rounded-md border border-border bg-card p-4 md:grid-cols-[80px_1fr_1fr_120px_120px_auto]">
