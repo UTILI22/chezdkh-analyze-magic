@@ -3,6 +3,13 @@ import { useCart, formatPrice } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { SHIPPING_CENTS, FREE_SHIPPING_COUNTRY, whatsappLink, BRAND } from "@/lib/config";
+import {
+  cleanShortText,
+  cleanLongText,
+  emailSchema,
+  phoneSchema,
+  detectSpam,
+} from "@/lib/anti-spam";
 import * as React from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,15 +32,15 @@ const COUNTRIES = [
 ];
 
 const schema = z.object({
-  firstName: z.string().trim().min(1).max(80),
-  lastName: z.string().trim().min(1).max(80),
-  email: z.string().trim().email().max(200),
-  phone: z.string().trim().min(5).max(40),
+  firstName: cleanShortText(80),
+  lastName: cleanShortText(80),
+  email: emailSchema,
+  phone: phoneSchema,
   country: z.string().min(1).max(80),
-  city: z.string().trim().max(120).optional(),
-  postal: z.string().trim().max(20).optional(),
-  address: z.string().trim().max(300).optional(),
-  notes: z.string().trim().max(500).optional(),
+  city: cleanLongText(120).optional().or(z.literal("")),
+  postal: z.string().trim().max(20).regex(/^[A-Za-z0-9 \-]*$/, "Code postal invalide").optional().or(z.literal("")),
+  address: cleanLongText(300, true).optional().or(z.literal("")),
+  notes: cleanLongText(500).optional().or(z.literal("")),
   pickup: z.boolean(),
 });
 
@@ -48,6 +55,9 @@ function CheckoutPage() {
     notes: "", pickup: false,
   });
   const [submitting, setSubmitting] = React.useState(false);
+  // Anti-spam : honeypot (champ caché) + horodatage de chargement du form.
+  const [honeypot, setHoneypot] = React.useState("");
+  const formStartedAt = React.useRef<number>(Date.now());
 
   const isBelgium = form.country === FREE_SHIPPING_COUNTRY;
   const shipping = isBelgium ? 0 : SHIPPING_CENTS;
@@ -73,6 +83,14 @@ function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Anti-spam : honeypot rempli ou form soumis trop vite ⇒ on simule un succès silencieux.
+    const spam = detectSpam({ honeypot, startedAt: formStartedAt.current });
+    if (spam) {
+      console.warn("Submission blocked:", spam);
+      // Faux succès pour ne pas révéler la détection au bot
+      toast.success(t("checkout.success"));
+      return;
+    }
     setSubmitting(true);
     try {
       const data = schema.parse(form);
@@ -161,6 +179,20 @@ function CheckoutPage() {
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_400px]">
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="font-display text-3xl tracking-wide md:text-4xl">{t("checkout.title")}</h1>
+
+          {/* Honeypot anti-spam — caché aux humains, visible aux bots */}
+          <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
+            <label htmlFor="company_website">Ne pas remplir</label>
+            <input
+              type="text"
+              id="company_website"
+              name="company_website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
