@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
-import { whatsappLink, SOCIALS } from "@/lib/config";
+import { whatsappLink, SOCIALS, absoluteUrl } from "@/lib/config";
 import { Mail, MessageCircle, MapPin } from "lucide-react";
 import { InstagramIcon, SnapchatIcon } from "@/components/SocialIcons";
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/contact")({
       },
       { name: "twitter:title", content: "Contact — QalbOfSilk" },
     ],
-    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/contact" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/contact") }],
   }),
   component: ContactPage,
 });

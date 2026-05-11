@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { SITE_URL } from "@/lib/config";
 
-const SITE = "https://chezdkh-analyze-magic.lovable.app";
+const SITE = SITE_URL;
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {

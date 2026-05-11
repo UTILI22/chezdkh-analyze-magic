@@ -5,4 +5,4 @@ Disallow: /admin/
 Disallow: /checkout
 Disallow: /thank-you/
 
-Sitemap: https://chezdkh-analyze-magic.lovable.app/sitemap.xml
+Sitemap: http://qalbofsilk.shop/sitemap.xml
