@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/ProductGrid";
 import { TrustBar } from "@/components/TrustBar";
 import { PriceTiers } from "@/components/PriceTiers";
 import { supabase } from "@/integrations/supabase/client";
+import { absoluteUrl } from "@/lib/config";
 
 type Product = {
   id: string;
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/")({
         content: "Burkinis pudiques. Pack 2 = 70€, 3 = 100€. Bruxelles & monde.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }],
   }),
   loader: async (): Promise<{ products: Product[] }> => {
     const { data, error } = await supabase

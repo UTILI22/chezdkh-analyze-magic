@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { ProductGrid } from "@/components/ProductGrid";
 import { PriceTiers } from "@/components/PriceTiers";
 import { supabase } from "@/integrations/supabase/client";
+import { absoluteUrl } from "@/lib/config";
 
 type Product = {
   id: string;
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/burkinis")({
         content: "Burkinis élégants et pudiques. Pack 2 = 70€, 3 = 100€.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/burkinis" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/burkinis") }],
   }),
   loader: async (): Promise<{ products: Product[] }> => {
     const { data, error } = await supabase

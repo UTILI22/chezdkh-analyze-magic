@@ -10,6 +10,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { SplashIntro } from "@/components/SplashIntro";
 import { Toaster } from "@/components/ui/sonner";
+import { SITE_URL, absoluteUrl } from "@/lib/config";
 
 function NotFoundComponent() {
   return (
@@ -37,8 +38,8 @@ const ORG_JSONLD = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "QalbOfSilk",
-  url: "https://chezdkh-analyze-magic.lovable.app",
-  logo: "https://chezdkh-analyze-magic.lovable.app/favicon.ico",
+  url: `${SITE_URL}/`,
+  logo: absoluteUrl("/favicon.ico"),
   description:
     "QalbOfSilk — Burkinis élégants et pudiques. Remise en main propre à Bruxelles, expédition mondiale.",
   sameAs: [
@@ -67,6 +68,7 @@ export const Route = createRootRoute({
       { property: "og:site_name", content: "QalbOfSilk" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "fr_FR" },
+      { property: "og:url", content: absoluteUrl("/") },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "QalbOfSilk — Burkinis élégants & pudiques | L'élégance de la pudeur" },
       {
@@ -78,7 +80,7 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "canonical", href: "https://chezdkh-analyze-magic.lovable.app/" },
+      { rel: "canonical", href: absoluteUrl("/") },
     ],
     scripts: [
       {

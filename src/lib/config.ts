@@ -4,6 +4,16 @@ export const BRAND = {
   tagline: "L'élégance & la pudeur",
 };
 
+const DEFAULT_SITE_URL = "http://qalbofsilk.shop";
+
+export const SITE_URL = String(import.meta.env.VITE_SITE_URL ?? DEFAULT_SITE_URL).replace(/\/+$/, "");
+
+export function absoluteUrl(pathname: string = "/") {
+  if (!pathname) return `${SITE_URL}/`;
+  if (pathname === "/") return `${SITE_URL}/`;
+  return `${SITE_URL}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
+}
+
 // Format international, sans + ni espaces. Mettre le vrai numéro plus tard.
 export const WHATSAPP_NUMBER = "32465452912";
 

@@ -6,6 +6,7 @@ import { resolveProductImage } from "@/lib/product-images";
 import { Check, Minus, Plus, ChevronLeft } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
+import { absoluteUrl } from "@/lib/config";
 
 type Product = {
   id: string;
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData, params }) => {
     if (!loaderData) return {};
     const p = loaderData.product;
-    const url = `https://chezdkh-analyze-magic.lovable.app/product/${params.slug}`;
+    const url = absoluteUrl(`/product/${params.slug}`);
     const priceEur = (p.price_cents / 100).toFixed(2);
     const productJsonLd = JSON.stringify({
       "@context": "https://schema.org",
